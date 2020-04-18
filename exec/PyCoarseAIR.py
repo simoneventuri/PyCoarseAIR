@@ -26,13 +26,13 @@ print("\n[PyCoarseAIR]: Defining Paths")
 
 WORKSPACE_PATH  = '/home/venturi/WORKSPACE/'                                                                    # It is NOT REQUIRED to change this path
 #WORKSPACE_PATH  = os.environ['WORKSPACE_PATH']   
-#CoarseAIRFldr   = WORKSPACE_PATH + '/CoarseAIR/coarseair/'										         	    # It is NOT REQUIRED to change this path
+CoarseAIRFldr   = WORKSPACE_PATH + '/CoarseAIR/coarseair/'										         	    # It is NOT REQUIRED to change this path
 #CoarseAIRFldr   = os.environ['COARSEAIR_SOURCE_DIR']
-PyCoarseAIRFldr = WORKSPACE_PATH  + '/PyCoarseAIR/'		                							            # <--- Please, CHANGE this path to the folder of the PyCoarseAIR Code
+PyCoarseAIRFldr = WORKSPACE_PATH + '/PyCoarseAIR/'		                							            # <--- Please, CHANGE this path to the folder of the PyCoarseAIR Code
 
 DtbHDF5Fldr     = WORKSPACE_PATH + '/Mars_Database/HDF5_Database/'                                              # <--- Please, CHANGE this path to the folder containing the HDF5 File
 
-DtbWriteFldr    = WORKSPACE_PATH + '/Mars_Database/Run_0D/database/'                                            # <--- Please, CHANGE this path to the folder where you want PYCoareseAIR writing the Postprocessed Kinetics Database
+DtbWriteFldr    = WORKSPACE_PATH + '/Mars_Database/Run_0D/database/'                                              # <--- Please, CHANGE this path to the folder where you want PYCoareseAIR writing the Postprocessed Kinetics Database
 OutputWriteFldr = WORKSPACE_PATH + '/Mars_Database/Results/'                                                    # <--- Please, CHANGE this path to the folder where you want PYCoareseAIR writing its Output Files and Plots
 ##--------------------------------------------------------------------------------------------------------------
 

@@ -35,6 +35,7 @@ def GetProperties_N2( Molecule ):
     Molecule.SymmFactor   = 2.0
     Molecule.ThetaRot     = 2.88
     Molecule.ThetaVib     = 3392.7
+    Molecule.ElecDeg      = 1.0
 
     return Molecule
 
@@ -51,6 +52,7 @@ def GetProperties_O2( Molecule ):
     Molecule.SymmFactor   = 2.0
     Molecule.ThetaRot     = 2.08
     Molecule.ThetaVib     = 2273.6
+    Molecule.ElecDeg      = 3.0
 
     return Molecule
 
@@ -67,6 +69,7 @@ def GetProperties_CO( Molecule ):
     Molecule.SymmFactor   = 1.0
     Molecule.ThetaRot     = 2.78
     Molecule.ThetaVib     = 3121.9
+    Molecule.ElecDeg      = 1.0
 
     return Molecule
 

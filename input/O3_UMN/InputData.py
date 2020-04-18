@@ -68,11 +68,11 @@ class kinetics(object):
         self.WriteFldr                  = DtbWriteFldr
         self.WriteDiss_Flg              = True 
         self.CorrFactor                 = 16.0/3.0
-        self.WriteInel_Flg              = False
-        self.WriteExch_Flg              = False
+        self.WriteInel_Flg              = True
+        self.WriteExch_Flg              = True
 
         self.WriteExoth_Flg             = True
-        self.WriteQB_IntFlg             = 0
+        self.WriteQB_IntFlg             = 2
         self.WriteFormat                = 'PLATO'
 
 
@@ -92,14 +92,14 @@ class kinetics(object):
         self.GroupsOutPathsToMapping    = ['']
         self.GroupsOut_Flg              = False
         self.GroupsOutWrite_Flg         = False
-        self.GroupsOutSuffix            = '_OnlyBound'
+        self.GroupsOutSuffix            = '' #_Phys_45Bins
 
 
         ## Packing + Unpacking Dissocation Rates:
-        self.PackUnpackDiss_Flg         = True
-        self.PackUnpackType             = ['VSM']
-        self.PackUnpackPathsToMapping   = ['']
-        self.PackUnpackSuffix           = '_VS' #_Phys_45Bins
+        self.PackUnpackDiss_Flg         = False
+        self.PackUnpackType             = ['CGM']
+        self.PackUnpackPathsToMapping   = ['/home/venturi/WORKSPACE/Mars_Database/Run_0D/database/grouping/O3_UMN/O2_Mapping_CB10.csv']
+        self.PackUnpackSuffix           = '_Phys_10Bins' #_Phys_45Bins
 
 
         ## Correcting Kinetics Based on Window-Averaging

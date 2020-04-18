@@ -124,8 +124,8 @@ def CO2_NASA_Upload( Temp ):
 
     Syst.MolToCFDComp       = np.array([2, 3])
 
-    Syst.ExchtoMol          = np.array([0,1])
-    Syst.ExchtoAtom         = np.array([2,0])
+    Syst.ExchToMol          = np.array([0,1])
+    Syst.ExchToAtom         = np.array([2,0])
 
     Syst.ColPartToComp      = 0
 
@@ -233,8 +233,8 @@ def O2C_NASA_Upload( Temp ):
 
     Syst.MolToCFDComp       = np.array([3, 2])
 
-    Syst.ExchtoMol          = np.array([1])
-    Syst.ExchtoAtom         = np.array([0])
+    Syst.ExchToMol          = np.array([1])
+    Syst.ExchToAtom         = np.array([0])
 
     Syst.ColPartToComp      = 1
 
@@ -446,8 +446,8 @@ def O3_UMN_Upload( Temp ):
     Syst.MolToCFDComp       = np.array([1])
 
 
-    Syst.ExchtoMol          = np.array([0])
-    Syst.ExchtoAtom         = np.array([2])
+    Syst.ExchToMol          = np.array([0])
+    Syst.ExchToAtom         = np.array([2])
 
     Syst.ColPartToComp      = 0
 
@@ -531,8 +531,8 @@ def N3_NASA_Upload( Temp ):
 
     Syst.MolToCFDComp       = np.array([1])
 
-    Syst.ExchtoMol          = np.array([0])
-    Syst.ExchtoAtom         = np.array([2])
+    Syst.ExchToMol          = np.array([0])
+    Syst.ExchToAtom         = np.array([2])
 
     Syst.ColPartToComp      = 0
 
@@ -555,6 +555,7 @@ def N4_NASA_Upload( Temp ):
     NCFDComp      = 2
     NProcTypes    = 3
     Syst          = system(SystNameLong, SystName, NAtoms, NMolecules, NDistMolecules, NPairs, NCFDComp, Temp.NTran, NProcTypes)
+    Syst.SymmFlg  = True
 
 
     Syst.Atom[0].Name  = 'N'
@@ -608,9 +609,10 @@ def N4_NASA_Upload( Temp ):
 
     Syst.CFDComp[0].Name   = 'N'
     Syst.CFDComp[1].Name   = 'N2'
-
-    Syst.CFDComp[0].ToMol   = -1
-    Syst.CFDComp[1].ToMol   =  0
+    
+    Syst.CFDComp[0].ToMol      = -1
+    Syst.CFDComp[1].ToMol      =  0
+    Syst.CFDComp[1].ToOppAtoms = np.array([0,0])
 
     Syst.CFDComp[0].Mass    = Syst.Atom[0].Mass
     Syst.CFDComp[1].Mass    = 2.0*Syst.Atom[2].Mass
@@ -629,8 +631,8 @@ def N4_NASA_Upload( Temp ):
 
     Syst.MolToCFDComp       = np.array([1])
 
-    Syst.ExchtoMol          = np.array([0,1])
-    Syst.ExchtoAtom         = np.array([2,0])
+    Syst.ExchToMol          = np.array([[0,0]])
+    Syst.ExchToAtom         = np.array([[2,0]])
 
     Syst.ColPartToComp      = 0
 
@@ -762,7 +764,8 @@ def NaNbNcNd_NASA_Upload( Temp ):
     Syst.MolToCFDComp[4]      = 1
     Syst.MolToCFDComp[5]      = 1
 
-    Syst.ExchtoMol          = np.array([[0,0]])
+    Syst.ExchToMol          = np.array([[0,0]])
+    Syst.ExchToAtom         = np.array([[2,0]])
 
     Syst.ColPartToComp      = 0
 

@@ -212,7 +212,7 @@ class groupedmolecule(object):
                 with open(PathToFile, 'a') as f:
                     Line = 'NB_ENERGY_LEVELS = ' + str(self.NGroups) + '\n'
                     f.write(Line)
-                    np.savetxt(f, np.transpose(np.array([self.T[iT].Q0, self.T[iT].Q0*0.0])), fmt='%.8e    %.8e')
+                    np.savetxt(f, np.transpose(np.array([self.T[iT].Q0 * Syst.Molecule[self.ToMol].ElecDeg, self.T[iT].Q0*0.0])), fmt='%.8e    %.8e')
                 f.close()
 
 
@@ -220,7 +220,7 @@ class groupedmolecule(object):
                 
                 with open(PathToFile, 'w') as f:
                     f.write('# $Q_I$,$E_I~[eV]$\n')
-                    np.savetxt(f, np.transpose(np.array([self.T[iT].Q0, self.T[iT].EeV])), fmt='%e,%e')
+                    np.savetxt(f, np.transpose(np.array([self.T[iT].Q0 * Syst.Molecule[self.ToMol].ElecDeg, self.T[iT].EeV])), fmt='%e,%e')
                 f.close()
 
 
@@ -887,7 +887,7 @@ class molecule(object):
                 for iLevel in range(self.NLevels):
                     if (self.LevelWrite_Flg[iLevel]):
                         jLevel = self.LevelNewMapping[iLevel]
-                        Line   = '%.8e    %.8e\n' % ( float(self.Levelg[iLevel]), float(self.LevelEeV0[iLevel]) )
+                        Line   = '%.8e    %.8e\n' % ( float(self.Levelg[iLevel] * self.ElecDeg), float(self.LevelEeV0[iLevel]) )
                         csvmole.write(Line)
                 csvmole.close()
 
@@ -899,7 +899,7 @@ class molecule(object):
                 for iLevel in range(self.NLevels):
                     if (self.LevelWrite_Flg[iLevel]):
                         jLevel = self.LevelNewMapping[iLevel]
-                        Line   = '%e,%e\n' % ( float(self.Levelg[iLevel]), float(self.LevelEeV0[iLevel]) )
+                        Line   = '%e,%e\n' % ( float(self.Levelg[iLevel] * self.ElecDeg), float(self.LevelEeV0[iLevel]) )
                         csvmole.write(Line)
                 csvmole.close()
 

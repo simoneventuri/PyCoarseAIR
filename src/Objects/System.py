@@ -57,6 +57,10 @@ class t_properties(object):
         self.Proc     = [processes() for iProc in range(4)]
         self.ProcExch = [processes() for iProc in range(NProcTypes-2)]
         self.ProcTot  = [processes() for iProc in range(NProcTypes)]
+
+        self.GroupedProc     = [processes() for iProc in range(4)]
+        self.GroupedProcExch = [processes() for iProc in range(NProcTypes-2)]
+        self.GroupedProcTot  = [processes() for iProc in range(NProcTypes)]
         #self.QSS      = qss(NProcTypes)
 
 
@@ -229,7 +233,7 @@ class t_properties(object):
         for iProc in range(2, 4):
             self.Proc[iProc].Rates       = np.zeros((Syst.Molecule[0].NLevels, Syst.Molecule[Syst.Pair[iProc-1].ToMol].NLevels))
         for iExch in range(2, Syst.NProcTypes):
-            self.ProcExch[iExch-2].Rates = np.zeros((Syst.Molecule[0].NLevels, Syst.Molecule[Syst.ExchtoMol[iExch-2]].NLevels))
+            self.ProcExch[iExch-2].Rates = np.zeros((Syst.Molecule[0].NLevels, Syst.Molecule[Syst.ExchToMol[iExch-2]].NLevels))
         print('    [System.py - Read_RatesAtT_OldVersion]:     Allocated Zero-Tensors of Processes')
 
         i  = 0
@@ -251,7 +255,7 @@ class t_properties(object):
             
         for iProc in range(2, 4):
             for iExch in range(2, Syst.NProcTypes):
-                if (Syst.Pair[iProc-1].ToMol == Syst.ExchtoMol[iExch-2] ):
+                if (Syst.Pair[iProc-1].ToMol == Syst.ExchToMol[iExch-2] ):
                     self.ProcExch[iExch-2].Rates = self.ProcExch[iExch-2].Rates + self.Proc[iProc].Rates
     # ...........................................................................................................................
 
@@ -323,7 +327,7 @@ class t_properties(object):
             for iProc in range(2, 4):
                 self.Proc[iProc].Rates       = np.zeros((NStates0, Syst.Pair[iP-1].NStates))
             for iExch in range(2, Syst.NProcTypes):
-                self.ProcExch[iExch-2].Rates = np.zeros((NStates0, Syst.EqNStatesIn[Syst.ExchtoMol[iExch-2]]))
+                self.ProcExch[iExch-2].Rates = np.zeros((NStates0, Syst.EqNStatesIn[Syst.ExchToMol[iExch-2]]))
 
             ProcType = np.array([1, 2, 3]) 
             if (Syst.Pair[2].ToMol == Syst.Pair[1].ToMol ):
@@ -353,7 +357,7 @@ class t_properties(object):
                 
             for iProc in range(2, 4):   
                 for iExch in range(2, Syst.NProcTypes):
-                    if (Syst.Pair[iProc-1].ToMol == Syst.ExchtoMol[iExch-2] ):
+                    if (Syst.Pair[iProc-1].ToMol == Syst.ExchToMol[iExch-2] ):
                         self.ProcExch[iExch-2].Rates = self.ProcExch[iExch-2].Rates + self.Proc[iProc].Rates
 
 
@@ -389,7 +393,7 @@ class t_properties(object):
                 print('    [System.py - Read_RatesAtT]: Pair ' + str(iP) + '; Rate Matrix shape = (' + str(NStates0_1) + '; ' + str(NStates0_2) + '; ' + str(Syst.Pair[iP-1].NStates) + '; ' + str(Syst.Pair[iPOppVec[iP-1]].NStates) + ')')
                 self.Proc[iP].Rates          = np.zeros((NStates0_1, NStates0_2, Syst.Pair[iP-1].NStates, Syst.Pair[iPOppVec[iP-1]].NStates))
             for iExch in range(2, Syst.NProcTypes):
-                self.ProcExch[iExch-2].Rates = np.zeros((NStates0_1, NStates0_2, Syst.EqNStatesIn[Syst.ExchtoMol[iExch-2,0]], Syst.EqNStatesIn[Syst.ExchtoMol[iExch-2,1]]))
+                self.ProcExch[iExch-2].Rates = np.zeros((NStates0_1, NStates0_2, Syst.EqNStatesIn[Syst.ExchToMol[iExch-2,0]], Syst.EqNStatesIn[Syst.ExchToMol[iExch-2,1]]))
 
             ProcType = np.array([1, 2, 3]) 
             if ( Syst.MolToCFDComp[Syst.Pair[2].ToMol] == Syst.MolToCFDComp[Syst.Pair[1].ToMol] ):
@@ -454,7 +458,7 @@ class t_properties(object):
                         
             for iProc in range(2, 4):
                 for iExch in range(2, Syst.NProcTypes):
-                    if ( ( Syst.MolToCFDComp[Syst.Pair[iProc-1].ToMol] == Syst.MolToCFDComp[Syst.ExchtoMol[iExch-2,0]] ) and ( Syst.MolToCFDComp[Syst.Pair[iPOppVec[iProc-1]].ToMol] == Syst.MolToCFDComp[Syst.ExchtoMol[iExch-2,1]] ) ):
+                    if ( ( Syst.MolToCFDComp[Syst.Pair[iProc-1].ToMol] == Syst.MolToCFDComp[Syst.ExchToMol[iExch-2,0]] ) and ( Syst.MolToCFDComp[Syst.Pair[iPOppVec[iProc-1]].ToMol] == Syst.MolToCFDComp[Syst.ExchToMol[iExch-2,1]] ) ):
                         print('    [System.py - Read_RatesAtT]: iPair ' + str(iProc) + ' corresponds to iExch ' + str(iExch-1) ) 
                         self.ProcExch[iExch-2].Rates = self.ProcExch[iExch-2].Rates + self.Proc[iProc].Rates
     # ...........................................................................................................................
@@ -551,7 +555,7 @@ class t_properties(object):
                             self.Proc[0].Rates[iLevel, 1] = self.Proc[0].Rates[iLevel, 1] + float(TempRate)
 
                     for iProc in range(2, Syst.NProcTypes):
-                        jMol = Syst.ExchtoMol[iProc-2]
+                        jMol = Syst.ExchToMol[iProc-2]
                         for jLevel in range(Syst.Molecule[jMol].NLevels):
                             if (not Syst.Molecule[0].LevelWrite_Flg[jLevel]):
                                 TempRate                          = self.ProcExch[iProc-2].Rates[iLevel, jLevel]
@@ -568,26 +572,27 @@ class t_properties(object):
     def Compute_BackwardRates( self, Syst ):
 
         if (Syst.NAtoms == 3):
-            print('    [System.py - Compute_BackwardRates]: Computing Backweard Rates for 3 Atoms System')
+            print('    [System.py - Compute_BackwardRates]: Computing Backward Rates for 3 Atoms System at Temperature Nb ' + str(self.iT) + ', T = ' + str(int(self.TTra)) + ' K')
 
             self.Proc[1].BckRates = self.Proc[1].Rates
-            for iLevel in range(Syst.Molecule[0].NLevels):
-                for jLevel in range(Syst.Molecule[0].NLevels):
+            for iLevel in range(Syst.EqNStatesIn[0]):
+                for jLevel in range(Syst.EqNStatesIn[0]):
                     if (Syst.Molecule[0].LevelEeV[iLevel] < Syst.Molecule[0].LevelEeV[jLevel]):
                         self.Proc[1].BckRates[iLevel, jLevel] = self.Proc[1].Rates[jLevel, iLevel] * Syst.Molecule[0].T[self.iT-1].LevelQ[jLevel] / Syst.Molecule[0].T[self.iT-1].LevelQ[iLevel]
 
 
             for iProc in range(2, Syst.NProcTypes):
-                jMol = Syst.ExchtoMol[iProc-2]
+                iExch = iProc-2
+                jMol  = Syst.ExchToMol[iExch]
 
-                self.ProcExch[iProc-2].BckRates = self.ProcExch[iProc-2].Rates
-                for iLevel in range(Syst.Molecule[0].NLevels):
-                    for jLevel in range(Syst.Molecule[jMol].NLevels):
+                self.ProcExch[iExch].BckRates = self.ProcExch[iExch].Rates
+                for iLevel in range(Syst.EqNStatesIn[0]):
+                    for jLevel in range(Syst.EqNStatesIn[jMol]):
                         if (Syst.Molecule[0].LevelEeV[iLevel] < Syst.Molecule[jMol].LevelEeV[jLevel]):
-                            self.ProcExch[iProc-2].BckRates[iLevel, jLevel] = self.ProcExch[iProc-2].Rates[jLevel, iLevel] * Syst.Molecule[0].T[self.iT-1].LevelQ[jLevel] / Syst.Molecule[jMol].T[self.iT-1].LevelQ[iLevel]
+                            self.ProcExch[iExch].BckRates[iLevel, jLevel] = self.ProcExch[iExch].Rates[jLevel, iLevel] * Syst.Molecule[0].T[self.iT-1].LevelQ[jLevel] / Syst.Molecule[jMol].T[self.iT-1].LevelQ[iLevel]
         
         else:
-            print('    [System.py - Compute_BackwardRates]: ERROR! Computation of Backweard Rates for 4 Atoms System NOT IMPLEMENTED yet!')
+            print('    [System.py - Compute_BackwardRates]: ERROR! Computation of Backward Rates for 4 Atoms System NOT IMPLEMENTED yet!')
     # ...........................................................................................................................
 
 
@@ -596,34 +601,36 @@ class t_properties(object):
     def Compute_GroupRates(self, Syst ):
 
         if (Syst.NAtoms == 3):
-            print('    [System.py - Compute_GroupRates]: Computing Grouped Rates for 3 Atoms System')
-            
-            print('      [System.py - Compute_GroupRates]:   Computing Grouped Dissociation Rates for Temperature Nb ' + str(self.iT+1) )
-            self.GroupedProc[0].Rates = np.zeros((Syst.EqNStatesOut[0],4))
-            
-            for iLevel in range(Syst.NLevels[0]):
-                iGroup = Syst.Molecule[0].Mapping[iLevel]
-                for iP in range(4):
-                    self.GroupedProc[0].Rates[iGroup,iP] = self.GroupedProc[0].Rates[iGroup,iP] + self.Proc[0].Rates[iLevel,iP] * Syst.Molecule[0].GroupsOut.T[self.iT+1].Expvec[iLevel] / Syst.Molecule[0].GroupsOut.T[self.iT+1].Q[iGroup]
+            print('      [System.py - Compute_GroupRates]: Computing Grouped Rates for 3 Atoms System for Temperature T = ' + str(Syst.Molecule[0].GroupsOut.T[self.iT].Value) + "K")
+            print('      [System.py - Compute_GroupRates]:   Syst.EqNStatesIn  = ', Syst.EqNStatesIn  )
+            print('      [System.py - Compute_GroupRates]:   Syst.EqNStatesOut = ', Syst.EqNStatesOut )
 
-            print('      [System.py - Compute_GroupRates]:   Computing Grouped Inelastic    Rates for Temperature Nb ' + str(self.iT+1) )
+
+            self.GroupedProc[0].Rates = np.zeros((Syst.EqNStatesOut[0],Syst.NProcTypes))            
+            for iLevel in range(Syst.EqNStatesIn[0]):
+                iGroup = Syst.Molecule[0].GroupsOut.Mapping[iLevel]
+                for iP in range(Syst.NProcTypes):
+                    self.GroupedProc[0].Rates[iGroup,iP] = self.GroupedProc[0].Rates[iGroup,iP] + self.Proc[0].Rates[iLevel,iP] * Syst.Molecule[0].GroupsOut.T[self.iT].Expvec[iLevel] / Syst.Molecule[0].GroupsOut.T[self.iT].Q[iGroup]
+
+
+            print('      [System.py - Compute_GroupRates]:   Computing Grouped Inelastic    Rates for Temperature Nb ' + str(self.iT) )
             self.GroupedProc[1].Rates = np.zeros((Syst.EqNStatesOut[0],Syst.EqNStatesOut[0]))
-            
-            for iLevel in range(Syst.NLevels[0]):
-                iGroup = self.Mapping[iLevel]
-                for jLevel in range(Syst.NLevels[0]):
-                    jGroup = self.Mapping[jLevel]
-                    self.GroupedProc[1].Rates[iGroup,jGroup] = self.GroupedProc[1].Rates[iGroup,jGroup] + self.Proc[1].BckRates[iLevel,jLevel] * Syst.Molecule[0].GroupsOut.T[self.iT+1].Expvec[iLevel] / Syst.Molecule[0].GroupsOut.T[self.iT+1].Q[iGroup]
+            for iLevel in range(Syst.EqNStatesIn[0]):
+                iGroup = Syst.Molecule[0].GroupsOut.Mapping[iLevel]
+                for jLevel in range(Syst.EqNStatesIn[0]):
+                    jGroup = Syst.Molecule[0].GroupsOut.Mapping[jLevel]
+                    self.GroupedProc[1].Rates[iGroup,jGroup] = self.GroupedProc[1].Rates[iGroup,jGroup] + self.Proc[1].BckRates[iLevel,jLevel] * Syst.Molecule[0].GroupsOut.T[self.iT].Expvec[iLevel] / Syst.Molecule[0].GroupsOut.T[self.iT].Q[iGroup]
 
-            print('      [System.py - Compute_GroupRates]:   Computing Grouped Exchange     Rates for Temperature Nb ' + str(self.iT+1) )
+            print('      [System.py - Compute_GroupRates]:   Computing Grouped Exchange     Rates for Temperature Nb ' + str(self.iT) )
             for iProc in range(2, Syst.NProcTypes):
-                self.ProcExch[iProc-2].Rates = np.zeros((Syst.EqNStatesOut[0],Syst.EqNStatesOut[iProc-1]))
-
-                for iLevel in range(Syst.NLevels[0]):
-                    iGroup = self.Mapping[iLevel]
-                    for jLevel in range(Syst.NLevels[iProc-1]):
-                        jGroup = self.Mapping[jLevel]
-                        self.GroupedProcExch[iProc-2].Rates[iGroup,jGroup] = self.GroupedProcExch[iProc-2].Rates[iGroup,jGroup] + self.ProcExch[iProc-2].BckRates[iLevel,jLevel] * Syst.Molecule[0].GroupsOut.T[self.iT+1].Expvec[iLevel] / Syst.Molecule[0].GroupsOut.T[self.iT+1].Q[iGroup]
+                iExch = iProc-2
+                jMol  = Syst.ExchToMol[iExch]
+                self.GroupedProcExch[iExch].Rates = np.zeros((Syst.EqNStatesOut[0], Syst.EqNStatesOut[jMol]))
+                for iLevel in range(Syst.EqNStatesIn[0]):
+                    iGroup = Syst.Molecule[0].GroupsOut.Mapping[iLevel]
+                    for jLevel in range(Syst.EqNStatesIn[jMol]):
+                        jGroup = Syst.Molecule[jMol].GroupsOut.Mapping[jLevel]
+                        self.GroupedProcExch[iExch].Rates[iGroup,jGroup] = self.GroupedProcExch[iExch].Rates[iGroup,jGroup] + self.ProcExch[iExch].BckRates[iLevel,jLevel] * Syst.Molecule[0].GroupsOut.T[self.iT].Expvec[iLevel] / Syst.Molecule[0].GroupsOut.T[self.iT].Q[iGroup]
         
         if (Syst.NAtoms == 4):
             print('    [System.py - Compute_GroupRates]: ERROR! Computing Grouped Rates for 4 Atoms System NOT IMPLEMENTED Yet!')
@@ -706,7 +713,7 @@ class t_properties(object):
             self.Proc[1].PrefJumps[iLevel,:] = np.argsort(TempVec)[-NJumps:] + 1
 
         for iProc in range(2, Syst.NProcTypes):
-            jMol = Syst.ExchtoMol[iProc-2]
+            jMol = Syst.ExchToMol[iProc-2]
             
             self.ProcExch[iProc-2].PrefJumps = np.zeros((Syst.Molecule[0].NLevels, NJumps), dtype=np.int32)
             for iLevel in range(Syst.Molecule[0].NLevels):
@@ -845,7 +852,7 @@ class t_properties(object):
                                         Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,5\n' % TempRates[jLevel]
                                     
                                     elif (InputData.Kin.WriteFormat == 'csv'):
-                                        Line     = '%d,%d,%e\n' % (iiLevel+1, jjLevel+1, float(TempRate))
+                                        Line     = '%d,%d,%e\n' % (iiLevel+1, jjLevel+1, TempRates[jLevel])
 
                                     elif (InputData.Kin.WriteFormat == 'custom'):
                                         print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
@@ -859,9 +866,9 @@ class t_properties(object):
 
                 for iExch in range (2, Syst.NProcTypes):
                     
-                    jToMol  = Syst.ExchtoMol[iExch-2]
-                    jToAtom = Syst.ExchtoAtom[iExch-2] 
-                    print('    [System.py - Write_Kinetics]: iExch =  ' + str(iExch-1) + ', Corresponding to Final Molecule Nb ' + str(jToMol) + ' and Atom Nb ' + str(jToAtom) )
+                    jToMol  = Syst.ExchToMol[iExch-2]
+                    jToAtom = Syst.ExchToAtom[iExch-2] 
+                    print('    [System.py - Write_Kinetics]: iExch =  ' + str(iExch-1) + ', Corresponding to Final Molecule Nb ' + str(jToMol+1) + ' and Atom Nb ' + str(jToAtom+1) )
 
                     if (InputData.Kin.WindAvrg_Flg):
                         ExchKinetics = TempFldr + 'Exch_Type' + str(iExch-1) + '_WindAvrg.dat' 
@@ -894,7 +901,7 @@ class t_properties(object):
                                             Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,6\n' % TempRates[jLevel]
                                         
                                         elif (InputData.Kin.WriteFormat == 'csv'):
-                                            Line     = '%d,%d,%e\n' % (iiLevel+1, jjLevel+1, float(TempRate))
+                                            Line     = '%d,%d,%e\n' % (iiLevel+1, jjLevel+1, TempRates[jLevel])
 
                                         elif (InputData.Kin.WriteFormat == 'custom'):
                                             print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
@@ -1092,8 +1099,8 @@ class t_properties(object):
                     Mol1_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name 
                     Mol2_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name
                     LHS_Str      = Mol1_Str + '+' + Mol2_Str
-                    Mol1_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.ExchtoMol[iExch-2,0]]].Name
-                    Mol2_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.ExchtoMol[iExch-2,1]]].Name
+                    Mol1_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.ExchToMol[iExch-2,0]]].Name
+                    Mol2_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.ExchToMol[iExch-2,1]]].Name
                     RHS_Str      = Mol1_Str + '+' + Mol2_Str
                     print('    [System.py - Write_Kinetics]: Writing Exchange Nb. '+ str(iExch-1) + ': ' + LHS_Str + '=' + RHS_Str )
 
@@ -1106,8 +1113,8 @@ class t_properties(object):
                         print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
                         csvkinetics.write('# HEADER')
 
-                    NBins_1 = Syst.EqNStatesIn[Syst.ExchtoMol[iExch-2,0]]
-                    NBins_2 = Syst.EqNStatesIn[Syst.ExchtoMol[iExch-2,1]]
+                    NBins_1 = Syst.EqNStatesIn[Syst.ExchToMol[iExch-2,0]]
+                    NBins_2 = Syst.EqNStatesIn[Syst.ExchToMol[iExch-2,1]]
 
                     for iStates in range(NStates0_1):
                         iiStates = Syst.Molecule[Syst.Pair[0].ToMol].LevelNewMapping[iStates]
@@ -1119,7 +1126,7 @@ class t_properties(object):
                             if ( ( (iStates >= InputData.Kin.MinStateOut[0] - 1) and (iStates <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[iStates]) and ( (jStates >= InputData.Kin.MinStateOut[1] - 1) and (jStates <= InputData.Kin.MaxStateOut[1] - 1) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[jStates]) ) ):
 
                                 for kStates in range(NBins_1):
-                                    kMol     = Syst.ExchtoMol[iExch-2,0]
+                                    kMol     = Syst.ExchToMol[iExch-2,0]
                                     kkStates = Syst.Molecule[kMol].LevelNewMapping[kStates]
                                     lStatesStart = 0
                                     SymmFct      = 1.0
@@ -1127,13 +1134,13 @@ class t_properties(object):
                                         lStatesStart = kStates
                                         #SymmFct    = 2.0
                                     for lStates in range(lStatesStart, NBins_2):
-                                        lMol     = Syst.ExchtoMol[iExch-2,1]
+                                        lMol     = Syst.ExchToMol[iExch-2,1]
                                         llStates = Syst.Molecule[lMol].LevelNewMapping[lStates]
                                         if ( ( (kStates >= InputData.Kin.MinStateOut[2] - 1) and (kStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[kMol].LevelWrite_Flg[kStates]) and ( (lStates >= InputData.Kin.MinStateOut[3] - 1) and (lStates <= InputData.Kin.MaxStateOut[3] - 1) and (Syst.Molecule[lMol].LevelWrite_Flg[lStates]) ) ):
  
                                             TempRate = self.ProcExch[iExch-2].Rates[iStates, jStates, kStates, lStates]        * SymmFct
                                             InEEh    = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[iStates]        + Syst.Molecule[Syst.Pair[5].ToMol].T[self.iT-1].EqEeV0In[jStates]
-                                            FinEEh   = Syst.Molecule[Syst.ExchtoMol[iExch-2,0]].T[self.iT-1].EqEeV0In[kStates] + Syst.Molecule[Syst.ExchtoMol[iExch-2,1]].T[self.iT-1].EqEeV0In[lStates]
+                                            FinEEh   = Syst.Molecule[Syst.ExchToMol[iExch-2,0]].T[self.iT-1].EqEeV0In[kStates] + Syst.Molecule[Syst.ExchToMol[iExch-2,1]].T[self.iT-1].EqEeV0In[lStates]
                                             
                                             if ((TempRate > 0.0) and ( TempCoeff * InEEh >= TempCoeff * FinEEh )):
 
@@ -1168,6 +1175,7 @@ class t_properties(object):
         mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/' )    
         TempFldr = InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/'
 
+
         if (InputData.Kin.WriteDiss_Flg):
             if (InputData.Kin.CorrFactor != 1.0):
                 DissKinetics = TempFldr + '/Diss_Corrected.dat' 
@@ -1177,11 +1185,26 @@ class t_properties(object):
                 print('    [System.py - Write_GroupedKinetics]: Writing Dissociation: ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name )
             csvkinetics  = open(DissKinetics, 'w')
 
-            for iGroup in range(self.EqNStatesOut[0]):
+            if (InputData.Kin.WriteFormat == 'csv'):
+                csvkinetics.write('#P,$K_{P}^{D}~[cm^3/s]$\n')
+            elif (InputData.Kin.WriteFormat == 'custom'):
+                print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+                csvkinetics.write('# HEADER')
 
-                if (self.GroupedProc[0].Rates[iGroup,0] > 0.0):
-                    ProcName = Syst.Molecule[0].Name + '(' + str(iGroup+1) + ')+' + Syst.Atom[2].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name
-                    Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,2\n' % float(self.GroupedProc[0].Rates[iGroup,0])
+            for iGroup in range(Syst.EqNStatesOut[0]):
+                TempRate = self.GroupedProc[0].Rates[iGroup,0]
+                if (TempRate > 0.0):
+
+                    if (InputData.Kin.WriteFormat == 'PLATO'):
+                        ProcName = Syst.Molecule[0].Name + '(' + str(iGroup+1) + ')+' + Syst.Atom[2].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name
+                        Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,2\n' % float(TempRate)
+
+                    elif (InputData.Kin.WriteFormat == 'csv'):
+                        Line     = '%d,%e\n' % (iGroup+1, float(TempRate))
+
+                    elif (InputData.Kin.WriteFormat == 'custom'):
+                        print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+
                     csvkinetics.write(Line)
             
             csvkinetics.close()
@@ -1192,18 +1215,31 @@ class t_properties(object):
             InelKinetics = TempFldr + '/Inel.dat' 
             print('    [System.py - Write_GroupedKinetics]: Writing Inelastic: ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name )
             csvkinetics  = open(InelKinetics, 'w')
-            #InelFile     = InputData.Kin.ReadFldr  + '/' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '_' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '.csv'
 
+            if (InputData.Kin.WriteFormat == 'csv'):
+                csvkinetics.write('#P,Q,$k_{P,Q}^{I}~[cm^3/s]$\n')
+            elif (InputData.Kin.WriteFormat == 'custom'):
+                print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+                csvkinetics.write('# HEADER')
 
-            for iGroup in range(self.EqNStatesOut[0]):
+            for iGroup in range(Syst.EqNStatesOut[0]):
                 TempRates = self.GroupedProc[1].Rates[iGroup,:]
                 if (InputData.Kin.WindAvrg_Flg):
                     TempRates = Syst.Compute_WindAvrg_Rates( TempRates )                
 
-                for jGroup in range(self.EqNStatesOut[0]):
-                    if ((TempRates[jGroup] > 0.0) and (Syst.Molecule[0].GroupsOut.T[iT].EeV[iGroup] > Syst.Molecule[0].GroupsOut.T[iT].EeV[jGroup]) ):
-                        ProcName = Syst.Molecule[0].Name + '(' + str(iGroup+1) + ')+' + Syst.Atom[2].Name + '=' + Syst.Molecule[0].Name + '(' + str(jGroup+1) + ')+' + Syst.Atom[2].Name
-                        Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,5\n' % TempRates[jGroup]
+                for jGroup in range(Syst.EqNStatesOut[0]):
+                    if ((TempRates[jGroup] > 0.0) and (Syst.Molecule[0].GroupsOut.T[self.iT-1].EeV[iGroup] > Syst.Molecule[0].GroupsOut.T[self.iT-1].EeV[jGroup]) ):
+                        
+                        if (InputData.Kin.WriteFormat == 'PLATO'):
+                            ProcName = Syst.Molecule[0].Name + '(' + str(iGroup+1) + ')+' + Syst.Atom[2].Name + '=' + Syst.Molecule[0].Name + '(' + str(jGroup+1) + ')+' + Syst.Atom[2].Name
+                            Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,5\n' % TempRates[jGroup]
+
+                        elif (InputData.Kin.WriteFormat == 'csv'):
+                            Line     = '%d,%d,%e\n' % (iGroup+1, jGroup+1, float(TempRates[jGroup]))
+
+                        elif (InputData.Kin.WriteFormat == 'custom'):
+                            print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+
                         csvkinetics.write(Line)
                         
             csvkinetics.close()
@@ -1211,21 +1247,38 @@ class t_properties(object):
 
         if (InputData.Kin.WriteExch_Flg):
 
-            for iExch in range (2, Syst.NProcTypes):
-                print('    [System.py - Write_GroupedKinetics]: iExch =  ' + str(iExch-1) )
+            for iProc in range (2, Syst.NProcTypes):
+                iExch = iProc-2
+                jMol  = Syst.ExchToMol[iExch]
+                jAtom = Syst.ExchToAtom[iExch]
+                print('    [System.py - Write_GroupedKinetics]: iExch =  ' + str(iExch+1) )
 
-                ExchKinetics = TempFldr + 'Exch_Type' + str(iExch-1) + '.dat' 
-                print('    [System.py - Write_GroupedKinetics]: Writing Exchange Nb. '+ str(iExch-1) + ': ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Molecule[Syst.ExchtoMol[iExch-2]].Name  + '+' + Syst.Atom[Syst.ExchtoAtom[iExch-2]].Name  )
+                ExchKinetics = TempFldr + 'Exch_Type' + str(iExch+1) + '.dat' 
+                print('    [System.py - Write_GroupedKinetics]: Writing Exchange Nb. '+ str(iExch+1) + ': ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Molecule[jMol].Name  + '+' + Syst.Atom[jAtom].Name  )
                 csvkinetics  = open(ExchKinetics, 'w')
-                #InelFile     = InputData.Kin.ReadFldr                               + '/'  + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Molecule[Syst.ExchtoMol[iExch-2]].Name  + '+' + Syst.Atom[Syst.ExchtoAtom[iExch-2]].Name + '.csv'
 
-                for iGroup in range(self.EqNStatesOut[0]):
-                    TempRates = self.GroupedProcExch[iExch-2].Rates[iGroup,:]                  
+                if (InputData.Kin.WriteFormat == 'csv'):
+                    csvkinetics.write('#P,Q,$k_{P,Q}^{E}~[cm^3/s]$\n')
+                elif (InputData.Kin.WriteFormat == 'custom'):
+                    print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+                    csvkinetics.write('# HEADER')
 
-                    for jGroup in range(self.EqNStatesOut[iExch-1]):
-                        if ((TempRates[jGroup] > 0.0) and (Syst.Molecule[0].GroupsOut.T[iT].EeV[iGroup] > Syst.Molecule[Syst.ExchtoMol[iExch-2]].GroupsOut.T[iT].EeV[jGroup]) ):
-                            ProcName = Syst.Molecule[0].Name + '(' + str(iGroup+1) + ')+' + Syst.Atom[2].Name + '=' + Syst.Molecule[Syst.ExchtoMol[iExch-2]].Name + '(' + str(jGroup+1) + ')+' + Syst.Atom[Syst.ExchtoAtom[iExch-2]].Name
-                            Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,6\n' % TempRates[jGroup]
+                for iGroup in range(Syst.EqNStatesOut[0]):
+                    TempRates = self.GroupedProcExch[iExch].Rates[iGroup,:]                  
+
+                    for jGroup in range(Syst.EqNStatesOut[jMol]):
+                        if ((TempRates[jGroup] > 0.0) and (Syst.Molecule[0].GroupsOut.T[self.iT-1].EeV[iGroup] > Syst.Molecule[jMol].GroupsOut.T[self.iT-1].EeV[jGroup]) ):
+                                
+                            if (InputData.Kin.WriteFormat == 'PLATO'):
+                                ProcName = Syst.Molecule[0].Name + '(' + str(iGroup+1) + ')+' + Syst.Atom[2].Name + '=' + Syst.Molecule[jMol].Name + '(' + str(jGroup+1) + ')+' + Syst.Atom[jAtom].Name
+                                Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,6\n' % TempRates[jGroup]
+                                
+                            elif (InputData.Kin.WriteFormat == 'csv'):
+                                Line     = '%d,%d,%e\n' % (iGroup+1, jGroup+1, float(TempRates[jGroup]))
+
+                            elif (InputData.Kin.WriteFormat == 'custom'):
+                                print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+
                             csvkinetics.write(Line)
 
                 csvkinetics.close()
@@ -1380,7 +1433,7 @@ class system(object):
 
 
             if ( (InputData.Kin.RatesPrefJumps_Flg) or (InputData.Kin.GroupsOut_Flg)):
-                print('  [System.py - Read_Rates]: Computing Backweard Rates for Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K)')
+                print('  [System.py - Read_Rates]: Computing Backward Rates for Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K)')
                 self.T[iT-1].Compute_BackwardRates( self )
 
 
@@ -1656,18 +1709,18 @@ class system(object):
     #         if (InputData.Kin.WriteExch_Flg == True):
 
     #             for iExch in range (2, self.NProcTypes):
-    #                 print('  Writing Exchange: ' + self.Molecule[0].Name + '+' + self.Atom[2].Name + '=' + self.Molecule[self.ExchtoMol[iExch-2]].Name + '+' + self.Atom[self.ExchtoAtom[iExch-2]].Name )
+    #                 print('  Writing Exchange: ' + self.Molecule[0].Name + '+' + self.Atom[2].Name + '=' + self.Molecule[self.ExchToMol[iExch-2]].Name + '+' + self.Atom[self.ExchToAtom[iExch-2]].Name )
     #                 ExchKinetics = TempFldr + '/Exch_Type' + str(iExch-1) + '.dat' 
     #                 csvkinetics  = open(ExchKinetics, 'w')
 
-    #                 ExchFile     = InputData.Kin.ReadFldr + '/' + self.Molecule[0].Name + '+' + self.Atom[2].Name + '_' + self.Molecule[self.ExchtoMol[iExch-2]].Name + '+' + self.Atom[self.ExchtoAtom[iExch-2]].Name + '_Exch.csv'
+    #                 ExchFile     = InputData.Kin.ReadFldr + '/' + self.Molecule[0].Name + '+' + self.Atom[2].Name + '_' + self.Molecule[self.ExchToMol[iExch-2]].Name + '+' + self.Atom[self.ExchToAtom[iExch-2]].Name + '_Exch.csv'
     #                 with open(ExchFile) as csvfile:
     #                     readCSV = csv.reader(csvfile, delimiter=',')
     #                     next(readCSV)
     #                     for row in readCSV:
 
     #                         if (float(row[iT+1]) > 0.0):
-    #                             ProcName = self.Molecule[0].Name + '(' + str(row[0]) + ')+' + self.Atom[2].Name + '=' + self.Molecule[self.ExchtoMol[iExch-2]].Name + '(' + str(row[1]) + ')+' + self.Atom[self.ExchtoAtom[iExch-2]].Name
+    #                             ProcName = self.Molecule[0].Name + '(' + str(row[0]) + ')+' + self.Atom[2].Name + '=' + self.Molecule[self.ExchToMol[iExch-2]].Name + '(' + str(row[1]) + ')+' + self.Atom[self.ExchToAtom[iExch-2]].Name
     #                             Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,6\n' % float(row[iT+1])
     #                             csvkinetics.write(Line)
                     
