@@ -20,6 +20,7 @@
 ##==============================================================================================================
 import numpy as np
 
+
 class inputdata(object):
 
     def __init__( self, WORKSPACE_PATH, CoarseAIRFldr, PyCoarseAIRFldr, DtbHDF5Fldr, DtbWriteFldr, OutputWriteFldr ):
@@ -28,8 +29,9 @@ class inputdata(object):
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
 
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([2500.0, 5000.0, 7500.0, 10000.0, 12500.0, 15000.0, 20000.0])
+        self.TranVec                   =  np.array([2500.0, 7500.0, 12500.0, 15000.0])
         self.T0                        = 300.0
+        self.iPES                      = 0
 
         self.DelRateMat_Flg            = True
 
@@ -41,6 +43,7 @@ class inputdata(object):
         self.OldVersion_IntFlg         = 1
         self.DtbReadFldr               = self.WORKSPACE_PATH + '/CG-QCT/run_O2C_ALL/Test/'
         self.OutputWriteFldr           = OutputWriteFldr 
+        self.SuffixName                = ''
 
 
         ### DO NOT CHANGE
@@ -67,10 +70,11 @@ class kinetics(object):
         self.WriteFldr                  = DtbWriteFldr
         self.WriteDiss_Flg              = True 
         self.CorrFactor                 = 1.0
+        self.DissTypes                  = np.array([0, 1, 2])
         self.WriteInel_Flg              = True
         self.WriteExch_Flg              = True
 
-        self.WriteExoth_Flg             = True
+        self.WriteExoth_Flg             = False
         self.WriteQB_IntFlg             = 2
         self.WriteFormat                = 'PLATO'
 

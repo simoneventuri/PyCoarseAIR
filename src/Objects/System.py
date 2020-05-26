@@ -71,7 +71,7 @@ class t_properties(object):
         if (Syst.NAtoms == 3):
             print('    [System.py - Load_RatesAtT_HDF5]: Loading Rates for a System of 3 Atoms' )
         
-            PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+            PathToFile    = Syst.PathToHDF5File
             HDF5Exist_Flg = path.exists(PathToFile)
             if (HDF5Exist_Flg):
                 f = h5py.File(PathToFile, 'a')
@@ -96,7 +96,7 @@ class t_properties(object):
         elif (Syst.NAtoms == 4):
             print('    [System.py - Load_RatesAtT_HDF5]: Loading Rates for a System of 4 Atoms' )
 
-            PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+            PathToFile = Syst.PathToHDF5File
             f          = h5py.File(PathToFile, "r")
 
             TStr = 'T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/Rates/'
@@ -180,7 +180,11 @@ class t_properties(object):
     def Read_RatesFile_OldVersion( self, Syst, iLevel ):
     #sed -i 's/D-/E-/g' *
 
-        PathToFile = Syst.PathToReadFldr + '/' + Syst.Molecule[0].Name + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/Bin' + str(iLevel+1) + '.dat'
+        PESChar = ''
+        if (Syst.iPES != 0):
+            PESChar = '.' + str(Syst.iPES)
+
+        PathToFile = Syst.PathToReadFldr + '/' + Syst.Molecule[0].Name + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/Bin' + str(iLevel+1) + '.dat' + PESChar
         #print(PathToFile)
         if (path.isfile(PathToFile)):
             count   = 0
@@ -265,7 +269,11 @@ class t_properties(object):
     def Read_RatesFile( self, Syst, iProc ):
         #sed -i 's/D-/E-/g' *
 
-        PathToFile = Syst.PathToReadFldr + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/Proc' + str(iProc+1) + '.csv'
+        PESChar = ''
+        if (Syst.iPES != 0):
+            PESChar = '.' + str(Syst.iPES)
+
+        PathToFile = Syst.PathToReadFldr + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/Proc' + str(iProc+1) + '.csv' + PESChar
         #print(PathToFile)
         if (path.isfile(PathToFile)):
             count   = 0
@@ -317,7 +325,7 @@ class t_properties(object):
             for iP in range(3):
                 iMol                   = Syst.Pair[iP].ToMol
                 Syst.Pair[iP].NStates  = Syst.EqNStatesIn[iMol]  
-                NProcTot               = NProcTot + Syst.Pair[iP].NStates 
+                NProcTot               = NProcTot + Syst.Pair[iP].NStates + 1
                 Syst.Pair[iP].NProcTot = NProcTot
                 print('    [System.py - Read_RatesAtT]:   Pair ' + str(iP) + ' = ' + str(Syst.Pair[iP].NStates) )
 
@@ -325,7 +333,7 @@ class t_properties(object):
             self.Proc[0].Rates = np.zeros((NStates0, Syst.NProcTypes))
             self.Proc[1].Rates = np.zeros((NStates0, Syst.Pair[0].NStates))
             for iProc in range(2, 4):
-                self.Proc[iProc].Rates       = np.zeros((NStates0, Syst.Pair[iP-1].NStates))
+                self.Proc[iProc].Rates       = np.zeros((NStates0, Syst.Pair[iProc-1].NStates))
             for iExch in range(2, Syst.NProcTypes):
                 self.ProcExch[iExch-2].Rates = np.zeros((NStates0, Syst.EqNStatesIn[Syst.ExchToMol[iExch-2]]))
 
@@ -336,8 +344,8 @@ class t_properties(object):
 
             i  = 0
             ii = 10
-            for iStates in range(Syst.Molecule[0].NStates):
-                if (int(iStates/Syst.Molecule[0].NStates*100) == int(i*ii)):
+            for iStates in range(NStates0):
+                if (int(iStates/NStates0*100) == int(i*ii)):
                     print('    [System.py - Read_RatesAtT]: Read ' + str(i*ii) + '% of the Rate Files')
                     i = i+1 
                 if ( (iStates >= InputData.Kin.MinStateIn[0] - 1) and (iStates <= InputData.Kin.MaxStateIn[0] - 1) ):
@@ -345,15 +353,17 @@ class t_properties(object):
                     RatesTempAll                            = np.zeros(Syst.Pair[-1].NProcTot+1)
                     [ProcessesTemp, RatesTemp, RatesSDTemp] = self.Read_RatesFile( Syst, iStates )
                     RatesTempAll[ProcessesTemp[:]-1]        = RatesTemp[:]
-
-                    RatesSplitted                       = np.split( RatesTempAll, np.array([1, Syst.Pair[0].NProcTot, Syst.Pair[1].NProcTot, Syst.Pair[2].NProcTot]) )
+  
+                    RatesSplitted                           = np.split( RatesTempAll, np.array([1, Syst.Pair[0].NProcTot, Syst.Pair[1].NProcTot, Syst.Pair[2].NProcTot]) )
                     #self.Proc[0].Rates[iStates,0] = RatesSplitted[0]
-                    self.Proc[0].Rates[iStates,0] = RatesSplitted[1][0:0]
+                    self.Proc[0].Rates[iStates,0] = RatesSplitted[1][0]   ### Overall Dissociation
+                    self.Proc[0].Rates[iStates,1] = RatesSplitted[1][0]   ### Dissociation from Pair 1
                     self.Proc[1].Rates[iStates,:] = RatesSplitted[1][1:]
-                    for iProc in range(2, 4):
-                        self.Proc[0].Rates[iStates,ProcType[iProc-2]] = RatesSplitted[iProc][0:0]
-                        self.Proc[0].Rates[iStates,0]                 = self.Proc[0].Rates[iStates,0] + RatesSplitted[iProc][0:0]
-                        self.Proc[iProc].Rates[iStates,:]             = RatesSplitted[iProc][1:]
+                    for iP in range(1, 3):
+                        iMol = Syst.Pair[iP].ToMol
+                        self.Proc[0].Rates[iStates,0]    = self.Proc[0].Rates[iStates,0]  + RatesSplitted[iP+1][0] ### Overall Dissociation
+                        self.Proc[0].Rates[iStates,iP]   = self.Proc[0].Rates[iStates,iP] + RatesSplitted[iP+1][0] ### Dissociation after Exchange to iMol-th Molecule 
+                        self.Proc[iP+1].Rates[iStates,:] = RatesSplitted[iP+1][1:]
                 
             for iProc in range(2, 4):   
                 for iExch in range(2, Syst.NProcTypes):
@@ -387,7 +397,7 @@ class t_properties(object):
                 Syst.Pair[iP].NProcTot = NProcTot
 
 
-            self.DissRates     = np.zeros((NStates0_1, NStates0_2, Syst.NProcTypes))
+            self.DissRates     = np.zeros((NStates0_1, NStates0_2, 4))
             self.Proc[0].Rates = np.zeros((NStates0_1, NStates0_2, maxNStates, Syst.NDistMolecules+6))
             for iP in range(1, 4):
                 print('    [System.py - Read_RatesAtT]: Pair ' + str(iP) + '; Rate Matrix shape = (' + str(NStates0_1) + '; ' + str(NStates0_2) + '; ' + str(Syst.Pair[iP-1].NStates) + '; ' + str(Syst.Pair[iPOppVec[iP-1]].NStates) + ')')
@@ -409,53 +419,58 @@ class t_properties(object):
                 for jStates in range(NStates0_2):
                     i = i+1 
                     if (int((iStates*jStates)/(NStates0_1*NStates0_2)*100) == int(i*ii)):
+                        print('    [System.py - Read_RatesAtT]: Nb Tot Processes = ' + str(Syst.Pair[2].NProcTot) )
                         print('    [System.py - Read_RatesAtT]: Read ' + str(i*ii) + '% of the Rate Files')
 
-                    if ( ( (iStates >= InputData.Kin.MinStateIn[0] - 1) and (iStates <= InputData.Kin.MaxStateIn[0] - 1) ) and ( (jStates >= InputData.Kin.MinStateIn[1]) and (jStates <= InputData.Kin.MaxStateIn[1]) ) ):
+                    if ( ( (iStates >= InputData.Kin.MinStateIn[0] - 1) and (iStates <= InputData.Kin.MaxStateIn[0] - 1) ) and ( (jStates >= InputData.Kin.MinStateIn[1] - 1 ) and (jStates <= InputData.Kin.MaxStateIn[1] - 1) ) ):
 
                         if (jStates >= jStatesStart):
                             RatesTempAll                            = np.zeros(Syst.Pair[2].NProcTot)
                             [ProcessesTemp, RatesTemp, RatesSDTemp] = self.Read_RatesFile( Syst, i-1 )
-                            RatesTempAll[ProcessesTemp[:]-1]        = RatesTemp[:]
+                            ProcessesTemp = ProcessesTemp - 1
+
+                            jProcc = -1
+                            for iProcc in ProcessesTemp:
+                                jProcc = jProcc + 1
+                                if (iProcc < 0): 
+                                    RatesTemp[jProcc] = 0.0
+                            RatesTempAll[ProcessesTemp]            = RatesTemp
 
                             iProc = -1
 
                             iProc = iProc + 1
-                            self.DissRates[iStates, jStates, 0] = self.DissRates[iStates, jStates, 0] + RatesTempAll[iProc]
+                            #self.DissRates[iStates, jStates, 0] = self.DissRates[iStates, jStates, 0] + RatesTempAll[iProc]
 
                             for iP in range(1, 4):
                                 for kStates in range(Syst.Pair[iP-1].NStates+1):
                                     for lStates in range(Syst.Pair[iPOppVec[iP-1]].NStates+1):
                                         iProc = iProc + 1
 
-                                        if ( (kStates == 0) and (lStates == 0) ): 
-                                            self.DissRates[iStates, jStates, ProcType[iP-1]]           = self.DissRates[iStates, jStates, ProcType[iP-1]]           + RatesTempAll[iProc]
-                                            self.DissRates[iStates, jStates,  0]                       = self.DissRates[iStates, jStates,  0]                       + RatesTempAll[iProc]
-                                        elif (kStates == 0):
-                                            iPair                                                      = iP-1
-                                            iPairTemp                                                  = Syst.NDistMolecules + iPair 
-                                            ToMol                                                      = Syst.CFDComp[ Syst.MolToCFDComp[ Syst.Pair[iPair].ToMol ] ].ToMol
-                                            self.Proc[0].Rates[iStates, jStates, lStates-1, ToMol]     = self.Proc[0].Rates[iStates, jStates, lStates-1, ToMol]     + RatesTempAll[iProc]
-                                            self.Proc[0].Rates[iStates, jStates, lStates-1, iPairTemp] = self.Proc[0].Rates[iStates, jStates, lStates-1, iPairTemp] + RatesTempAll[iProc]
-                                        elif (lStates == 0):
-                                            iPair                                                      = iPOppVec[iP-1]
-                                            iPairTemp                                                  = Syst.NDistMolecules + iPair 
-                                            ToMol                                                      = Syst.CFDComp[ Syst.MolToCFDComp[ Syst.Pair[iPair].ToMol ] ].ToMol
-                                            self.Proc[0].Rates[iStates, jStates, kStates-1, ToMol]     = self.Proc[0].Rates[iStates, jStates, kStates-1, ToMol]     + RatesTempAll[iProc]
-                                            self.Proc[0].Rates[iStates, jStates, kStates-1, iPairTemp] = self.Proc[0].Rates[iStates, jStates, kStates-1, iPairTemp] + RatesTempAll[iProc]
-                                        else:
-                                            iTemp1  = kStates-1
-                                            iTemp2  = lStates-1
-                                            SymmFlg = 1.0
-                                            if (Syst.SymmFlg):
-                                                if (iTemp1 > iTemp2):
-                                                    iTemp3 = iTemp2
-                                                    iTemp2 = iTemp1
-                                                    iTemp1 = iTemp3
-                                                elif (iTemp1 == iTemp2):
-                                                    SymmFlg = 2.0
-                                            self.Proc[iP].Rates[iStates, jStates, iTemp1, iTemp2]      = self.Proc[iP].Rates[iStates, jStates, iTemp1, iTemp2]      + RatesTempAll[iProc] * SymmFlg
-                        
+                                        if (RatesTempAll[iProc] > 0.0):
+
+                                            if ( (kStates == 0) and (lStates == 0) ): 
+                                                self.DissRates[iStates, jStates, iP]                       = self.DissRates[iStates, jStates, iP]                       + RatesTempAll[iProc]
+                                                self.DissRates[iStates, jStates,  0]                       = self.DissRates[iStates, jStates,  0]                       + RatesTempAll[iProc]
+                                                print(iStates, jStates, iP, self.DissRates[iStates, jStates,  0])
+                                            elif (kStates == 0):
+                                                iPair                                                      = iP-1
+                                                iPairTemp                                                  = Syst.NDistMolecules + iPair 
+                                                ToMol                                                      = Syst.CFDComp[ Syst.MolToCFDComp[ Syst.Pair[iPair].ToMol ] ].ToMol
+                                                self.Proc[0].Rates[iStates, jStates, lStates-1, ToMol]     = self.Proc[0].Rates[iStates, jStates, lStates-1, ToMol]     + RatesTempAll[iProc]
+                                                self.Proc[0].Rates[iStates, jStates, lStates-1, iPairTemp] = self.Proc[0].Rates[iStates, jStates, lStates-1, iPairTemp] + RatesTempAll[iProc]
+                                            elif (lStates == 0):
+                                                iPair                                                      = iPOppVec[iP-1]
+                                                iPairTemp                                                  = Syst.NDistMolecules + iPair 
+                                                ToMol                                                      = Syst.CFDComp[ Syst.MolToCFDComp[ Syst.Pair[iPair].ToMol ] ].ToMol
+                                                self.Proc[0].Rates[iStates, jStates, kStates-1, ToMol]     = self.Proc[0].Rates[iStates, jStates, kStates-1, ToMol]     + RatesTempAll[iProc]
+                                                self.Proc[0].Rates[iStates, jStates, kStates-1, iPairTemp] = self.Proc[0].Rates[iStates, jStates, kStates-1, iPairTemp] + RatesTempAll[iProc]
+                                            else:
+                                                iTemp1  = kStates-1
+                                                iTemp2  = lStates-1
+                                                self.Proc[iP].Rates[iStates, jStates, iTemp1, iTemp2]      = self.Proc[iP].Rates[iStates, jStates, iTemp1, iTemp2] + RatesTempAll[iProc]
+
+                            print(self.DissRates[iStates, jStates,  0])
+                            
             for iProc in range(2, 4):
                 for iExch in range(2, Syst.NProcTypes):
                     if ( ( Syst.MolToCFDComp[Syst.Pair[iProc-1].ToMol] == Syst.MolToCFDComp[Syst.ExchToMol[iExch-2,0]] ) and ( Syst.MolToCFDComp[Syst.Pair[iPOppVec[iProc-1]].ToMol] == Syst.MolToCFDComp[Syst.ExchToMol[iExch-2,1]] ) ):
@@ -470,7 +485,7 @@ class t_properties(object):
 
         if (Syst.NAtoms == 3):
 
-            PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+            PathToFile    = Syst.PathToHDF5File
             HDF5Exist_Flg = path.exists(PathToFile)
             #if (HDF5Exist_Flg):
             f = h5py.File(PathToFile, 'a')
@@ -505,7 +520,7 @@ class t_properties(object):
 
         else:
             
-            PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+            PathToFile = Syst.PathToHDF5File
             f          = h5py.File(PathToFile, 'a')
 
             TStr = 'T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/Rates/'       
@@ -770,53 +785,64 @@ class t_properties(object):
 
 
         mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' ) 
-        mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.Kin.GroupsOutSuffix )
-        mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/' )    
-        TempFldr = InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/'
+        mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.SuffixName + InputData.Kin.GroupsOutSuffix )
+        mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.SuffixName + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/' )    
+        TempFldr = InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.SuffixName + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/'
 
         if (Syst.NAtoms == 3):
             print('    [System.py - Write_Kinetics]: Writing Kinetics for 3 Atoms System' )
 
             if (InputData.Kin.WriteDiss_Flg):
-                if (InputData.Kin.CorrFactor != 1.0):
-                    if (InputData.Kin.PackUnpackDiss_Flg):
-                        DissKinetics = TempFldr + '/Diss' + InputData.Kin.PackUnpackSuffix + '.dat' 
-                    else:
-                        DissKinetics = TempFldr + '/Diss_Corrected.dat'
-                    print('    [System.py - Write_Kinetics]: Writing Corrected Dissociation: ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name )
-                else:
-                    if (InputData.Kin.PackUnpackDiss_Flg):
-                        DissKinetics = TempFldr + '/Diss' + InputData.Kin.PackUnpackSuffix + '.dat' 
-                    else:
-                        DissKinetics = TempFldr + '/Diss.dat' 
-                    print('    [System.py - Write_Kinetics]: Writing Dissociation: ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name )
-                csvkinetics  = open(DissKinetics, 'w')
-                
-                if (InputData.Kin.WriteFormat == 'csv'):
-                    csvkinetics.write('#i,$k_i^{D}~[cm^3/s]$\n')
-                elif (InputData.Kin.WriteFormat == 'custom'):
-                    print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
-                    csvkinetics.write('# HEADER')
 
 
-                for iLevel in range(Syst.Molecule[0].NLevels):
-                    TempRate = self.Proc[0].Rates[iLevel,0]
-                    if ( (TempRate > 0.0) and ( (iLevel >= InputData.Kin.MinStateOut[0] - 1) and (iLevel <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[0].LevelWrite_Flg[iLevel]) ):
-                        iiLevel  = Syst.Molecule[0].LevelNewMapping[iLevel]
-
-                        if (InputData.Kin.WriteFormat == 'PLATO'):
-                            ProcName = Syst.Molecule[0].Name + '(' + str(iiLevel+1) + ')+' + Syst.Atom[2].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name
-                            Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,2\n' % float(TempRate)
-                        
-                        elif (InputData.Kin.WriteFormat == 'csv'):
-                            Line     = '%d,%e\n' % (iiLevel+1, float(TempRate))
-
-                        elif (InputData.Kin.WriteFormat == 'custom'):
-                            print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
-
-                        csvkinetics.write(Line)
+                for iDiss in InputData.Kin.DissTypes:
                     
-                csvkinetics.close()
+                    iMol      = 0
+                    iAtom     = 2
+                    NStates_0 = Syst.EqNStatesIn[iMol]
+                    DissSuffix = ''
+                    if (iDiss > 0):
+                        DissSuffix = '.' + str(iDiss)
+
+                    if (InputData.Kin.CorrFactor != 1.0):
+                        if (InputData.Kin.PackUnpackDiss_Flg):
+                            DissKinetics = TempFldr + '/Diss' + InputData.Kin.PackUnpackSuffix + '.dat' + DissSuffix
+                        else:
+                            DissKinetics = TempFldr + '/Diss_Corrected.dat' + DissSuffix
+                        print('    [System.py - Write_Kinetics]: Writing Corrected Dissociation: ' + Syst.Molecule[iMol].Name + '+' + Syst.Atom[iAtom].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name )
+                    else:
+                        if (InputData.Kin.PackUnpackDiss_Flg):
+                            DissKinetics = TempFldr + '/Diss' + InputData.Kin.PackUnpackSuffix + '.dat' + DissSuffix
+                        else:
+                            DissKinetics = TempFldr + '/Diss.dat' + DissSuffix
+                        print('    [System.py - Write_Kinetics]: Writing Dissociation: ' + Syst.Molecule[iMol].Name + '+' + Syst.Atom[iAtom].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name )
+                    csvkinetics  = open(DissKinetics, 'w')
+                    
+                    if (InputData.Kin.WriteFormat == 'csv'):
+                        csvkinetics.write('#i,$k_i^{D}~[cm^3/s]$\n')
+                    elif (InputData.Kin.WriteFormat == 'custom'):
+                        print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+                        csvkinetics.write('# HEADER')
+
+
+                    for iLevel in range(NStates_0):
+                        TempRate = self.Proc[0].Rates[iLevel,iDiss]
+                        if ( (TempRate > 0.0) and ( (iLevel >= InputData.Kin.MinStateOut[0] - 1) and (iLevel <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[0].LevelWrite_Flg[iLevel]) ):
+                            iiLevel  = Syst.Molecule[iMol].LevelNewMapping[iLevel]
+
+                            if (InputData.Kin.WriteFormat == 'PLATO'):
+                                ProcName = Syst.Molecule[iMol].Name + '(' + str(iiLevel+1) + ')+' + Syst.Atom[iAtom].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name
+                                Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,2\n' % float(TempRate)
+                            
+                            elif (InputData.Kin.WriteFormat == 'csv'):
+                                Line     = '%d,%e\n' % (iiLevel+1, float(TempRate))
+
+                            elif (InputData.Kin.WriteFormat == 'custom'):
+                                print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+
+                            csvkinetics.write(Line)
+                        
+                    csvkinetics.close()
 
 
             if (InputData.Kin.WriteInel_Flg):
@@ -989,10 +1015,8 @@ class t_properties(object):
                 for iStates in range(NStates0_1):
                     iiStates = Syst.Molecule[Syst.Pair[0].ToMol].LevelNewMapping[iStates]
                     jStatesStart = 0 
-                    SymmFct    = 1.0
                     if (Syst.SymmFlg):
                         jStatesStart = iStates
-                        #SymmFct    = 2.0
                     for jStates in range(jStatesStart, NStates0_2):
                         jjStates = Syst.Molecule[Syst.Pair[5].ToMol].LevelNewMapping[jStates]
                         if ( ( (iStates >= InputData.Kin.MinStateOut[0] - 1) and (iStates <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[iStates]) and ( (jStates >= InputData.Kin.MinStateOut[1] - 1) and (jStates <= InputData.Kin.MaxStateOut[1] - 1) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[jStates]) ) ):
@@ -1003,9 +1027,9 @@ class t_properties(object):
                                     NBins_1 = Syst.EqNStatesIn[iMol]
                                     for kStates in range(NBins_1):
                                         kkStates = Syst.Molecule[iMol].LevelNewMapping[kStates]
-                                        if ( ( (kStates >= InputData.Kin.MinStateOut[2] - 1) and (kStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[iMol].LevelWrite_Flg[kStates]) ):
+                                        if ( ( (kkStates >= InputData.Kin.MinStateOut[2] - 1) and (kkStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[iMol].LevelWrite_Flg[kkStates]) ):
 
-                                            TempRate = self.Proc[0].Rates[iStates, jStates, kStates, iMol]
+                                            TempRate = self.Proc[0].Rates[iStates, jStates, kkStates, iMol]
                                             if (TempRate > 0.0):
 
                                                 if (InputData.Kin.WriteFormat == 'PLATO'):
@@ -1057,15 +1081,14 @@ class t_properties(object):
                             for kStates in range(NStates0_1):
                                 kkStates = Syst.Molecule[Syst.Pair[0].ToMol].LevelNewMapping[kStates]
                                 lStatesStart = 0
-                                SymmFct    = 1.0
                                 if (Syst.SymmFlg):
                                     lStatesStart = kStates
-                                    #SymmFct    = 2.0
                                 for lStates in range(lStatesStart, NStates0_2):
                                     llStates = Syst.Molecule[Syst.Pair[5].ToMol].LevelNewMapping[lStates]
                                     if ( ( (kStates >= InputData.Kin.MinStateOut[2] - 1) and (kStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[kStates]) and ( (lStates >= InputData.Kin.MinStateOut[3] - 1) and (lStates <= InputData.Kin.MaxStateOut[3] - 1) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[lStates]) ) ):
+ 
+                                        TempRate = ( self.Proc[1].Rates[iStates, jStates, kStates, lStates]         + self.Proc[1].Rates[iStates, jStates, lStates, kStates] )
 
-                                        TempRate = self.Proc[1].Rates[iStates, jStates, kStates, lStates]           * SymmFct
                                         InEEh    = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[iStates] + Syst.Molecule[Syst.Pair[5].ToMol].T[self.iT-1].EqEeV0In[jStates]
                                         FinEEh   = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[kStates] + Syst.Molecule[Syst.Pair[5].ToMol].T[self.iT-1].EqEeV0In[lStates]
                                         
@@ -1129,16 +1152,15 @@ class t_properties(object):
                                     kMol     = Syst.ExchToMol[iExch-2,0]
                                     kkStates = Syst.Molecule[kMol].LevelNewMapping[kStates]
                                     lStatesStart = 0
-                                    SymmFct      = 1.0
                                     if (Syst.SymmFlg):
                                         lStatesStart = kStates
-                                        #SymmFct    = 2.0
                                     for lStates in range(lStatesStart, NBins_2):
                                         lMol     = Syst.ExchToMol[iExch-2,1]
                                         llStates = Syst.Molecule[lMol].LevelNewMapping[lStates]
                                         if ( ( (kStates >= InputData.Kin.MinStateOut[2] - 1) and (kStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[kMol].LevelWrite_Flg[kStates]) and ( (lStates >= InputData.Kin.MinStateOut[3] - 1) and (lStates <= InputData.Kin.MaxStateOut[3] - 1) and (Syst.Molecule[lMol].LevelWrite_Flg[lStates]) ) ):
  
-                                            TempRate = self.ProcExch[iExch-2].Rates[iStates, jStates, kStates, lStates]        * SymmFct
+                                            TempRate = ( self.ProcExch[iExch-2].Rates[iStates, jStates, kStates, lStates]      + self.ProcExch[iExch-2].Rates[iStates, jStates, lStates, kStates]  ) 
+
                                             InEEh    = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[iStates]        + Syst.Molecule[Syst.Pair[5].ToMol].T[self.iT-1].EqEeV0In[jStates]
                                             FinEEh   = Syst.Molecule[Syst.ExchToMol[iExch-2,0]].T[self.iT-1].EqEeV0In[kStates] + Syst.Molecule[Syst.ExchToMol[iExch-2,1]].T[self.iT-1].EqEeV0In[lStates]
                                             
@@ -1171,9 +1193,9 @@ class t_properties(object):
     def Write_GroupedKinetics( self, InputData, Syst, Temp ):
 
         mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' ) 
-        mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.Kin.GroupsOutSuffix )
-        mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/' )    
-        TempFldr = InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/'
+        mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.SuffixName + InputData.Kin.GroupsOutSuffix )
+        mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.SuffixName + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/' )    
+        TempFldr = InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.SuffixName + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/'
 
 
         if (InputData.Kin.WriteDiss_Flg):
@@ -1399,9 +1421,9 @@ class system(object):
             self.T[iT-1].TTra = Temp.TranVec[iT-1]
             self.T[iT-1].TInt = self.T[iT-1].TTra
 
-            PathToFile  = self.PathToHDF5 + '/' + self.NameLong + '.hdf5'
-            f           = h5py.File(PathToFile, 'a')
-            TStr        = 'T_' + str(int(self.T[iT-1].TTra)) + '_' + str(int(self.T[iT-1].TInt)) + '/Rates/'
+            PathToFile   = self.PathToHDF5File
+            f            = h5py.File(PathToFile, 'a')
+            TStr         = 'T_' + str(int(self.T[iT-1].TTra)) + '_' + str(int(self.T[iT-1].TInt)) + '/Rates/'
             TPresent_Flg = TStr in f.keys()
             f.close()
             if (TPresent_Flg): print('  [System.py - Read_Rates]: Found Rates Data for Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K) in the HDF5 File')

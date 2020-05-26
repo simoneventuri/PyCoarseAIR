@@ -27,10 +27,10 @@ class inputdata(object):
         self.WORKSPACE_PATH            = WORKSPACE_PATH
         self.CoarseAIRFldr             = CoarseAIRFldr
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
-
+        
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([2500.0, 7500.0, 12500.0, 15000.0])
-        self.T0                        = 300.0
+        self.TranVec                   = np.array([2500.0, 5000.0, 7500.0, 10000.0])
+        self.T0                        = 1400.0
         self.iPES                      = 0
 
         self.DelRateMat_Flg            = True
@@ -39,12 +39,12 @@ class inputdata(object):
 
 
         ### CHEMICAL SYSTEM SPECIFIC
-        self.SystNameLong              = 'CO2_NASA'
+        self.SystNameLong              = 'O3_UMN'
         self.OldVersion_IntFlg         = 1
-        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CG-QCT/run_CO2_ALL/Test/'
+        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CG-QCT/O3_PES9_Varga/Test/'
         self.OutputWriteFldr           = OutputWriteFldr 
-        self.SuffixName                = ''
-
+        self.SuffixName                = '_PES9_Varga'
+ 
 
         ### DO NOT CHANGE
         self.NTran                     = np.size(   self.TranVec )
@@ -70,7 +70,7 @@ class kinetics(object):
         self.WriteFldr                  = DtbWriteFldr
         self.WriteDiss_Flg              = True 
         self.CorrFactor                 = 1.0
-        self.DissTypes                  = np.array([0, 1, 2])
+        self.DissTypes                  = np.array([0])
         self.WriteInel_Flg              = True
         self.WriteExch_Flg              = True
 
@@ -80,7 +80,7 @@ class kinetics(object):
 
 
         ## Resolution of the Kinetics Data in Input? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
-        self.MolResolutionIn            = ['StS', 'StS']
+        self.MolResolutionIn            = ['StS']
         self.MinStateIn                 = np.array([     0], dtype=np.int64)
         self.MaxStateIn                 = np.array([100000], dtype=np.int64)
         self.NGroupsIn                  = []
@@ -88,20 +88,20 @@ class kinetics(object):
         self.GroupsInSuffix             = ''
 
         ## Resolution of the Kinetics Data in Output? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
-        self.MolResolutionOut           = ['StS', 'StS']
+        self.MolResolutionOut           = ['StS']
         self.MinStateOut                = np.array([     0,      0], dtype=np.int64)
         self.MaxStateOut                = np.array([100000, 100000], dtype=np.int64)
         self.NGroupsOut                 = []
         self.GroupsOutPathsToMapping    = ['']
         self.GroupsOut_Flg              = False
         self.GroupsOutWrite_Flg         = False
-        self.GroupsOutSuffix            = ''
+        self.GroupsOutSuffix            = '' #_Phys_45Bins
 
 
         ## Packing + Unpacking Dissocation Rates:
         self.PackUnpackDiss_Flg         = False
-        self.PackUnpackType             = ['VSM', 'VSM']
-        self.PackUnpackPathsToMapping   = ['', '']
+        self.PackUnpackType             = ['VSM']
+        self.PackUnpackPathsToMapping   = ['/home/venturi/WORKSPACE/O3Diss_Database/Run_0D/database/grouping/O3_UMN/O2_Mapping_VS.csv']
         self.PackUnpackSuffix           = '_VS' #_Phys_45Bins
 
 

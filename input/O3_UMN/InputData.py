@@ -29,8 +29,9 @@ class inputdata(object):
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
         
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([1500.0, 2500.0, 3000.0, 5000.0, 6000.0, 8000.0, 10000.0, 12000.0, 14000.0, 15000.0, 20000.0])
+        self.TranVec                   = np.array([10000.0]) #np.array([1500.0, 2500.0, 5000.0, 6000.0, 8000.0, 10000.0, 12000.0, 14000.0, 15000.0, 20000.0])
         self.T0                        = 300.0
+        self.iPES                      = 0
 
         self.DelRateMat_Flg            = True
 
@@ -40,9 +41,10 @@ class inputdata(object):
         ### CHEMICAL SYSTEM SPECIFIC
         self.SystNameLong              = 'O3_UMN'
         self.OldVersion_IntFlg         = 1
-        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CG-QCT/run_O3_ALL/Test/'
+        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CG-QCT/O3_ALL/Test/'
         self.OutputWriteFldr           = OutputWriteFldr 
-
+        self.SuffixName                = ''
+ 
 
         ### DO NOT CHANGE
         self.NTran                     = np.size(   self.TranVec )
@@ -68,6 +70,7 @@ class kinetics(object):
         self.WriteFldr                  = DtbWriteFldr
         self.WriteDiss_Flg              = True 
         self.CorrFactor                 = 16.0/3.0
+        self.DissTypes                  = np.array([0])
         self.WriteInel_Flg              = True
         self.WriteExch_Flg              = True
 
@@ -97,9 +100,9 @@ class kinetics(object):
 
         ## Packing + Unpacking Dissocation Rates:
         self.PackUnpackDiss_Flg         = False
-        self.PackUnpackType             = ['CGM']
-        self.PackUnpackPathsToMapping   = ['/home/venturi/WORKSPACE/Mars_Database/Run_0D/database/grouping/O3_UMN/O2_Mapping_CB10.csv']
-        self.PackUnpackSuffix           = '_Phys_10Bins' #_Phys_45Bins
+        self.PackUnpackType             = ['VSM']
+        self.PackUnpackPathsToMapping   = ['/home/venturi/WORKSPACE/O3Diss_Database/Run_0D/database/grouping/O3_UMN/O2_Mapping_VS.csv']
+        self.PackUnpackSuffix           = '_VS' #_Phys_45Bins
 
 
         ## Correcting Kinetics Based on Window-Averaging

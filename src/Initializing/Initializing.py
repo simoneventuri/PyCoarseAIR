@@ -57,7 +57,12 @@ def Initialize_Data(InputData):
     if not os.path.exists(Syst.PathToHDF5):
         os.makedirs(Syst.PathToHDF5)
     Syst.HDF5Exist_Flg = True
-    PathToFile         = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+    Syst.iPES = InputData.iPES
+    PESChar   = ''
+    if (Syst.iPES != 0):
+        PESChar = '_PES' + str(InputData.iPES)
+    Syst.PathToHDF5File = Syst.PathToHDF5 + '/' + Syst.NameLong + InputData.SuffixName + PESChar + '.hdf5'
+    PathToFile          = Syst.PathToHDF5File
     if not os.path.isfile(PathToFile):
         Syst.HDF5Exist_Flg = False
         print("  [Initializing.py - Initialize_Data]: WARNING: The HDF5 File " + PathToFile + " corresponding to the System " + Syst.NameLong + " does not exist. I will create a new one." )    

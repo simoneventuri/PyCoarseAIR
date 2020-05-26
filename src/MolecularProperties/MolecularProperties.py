@@ -58,6 +58,23 @@ def GetProperties_O2( Molecule ):
 
 
 ################################################################################################################
+### NO
+def GetProperties_NO( Molecule ):   
+
+    Molecule.ElementNames = 'N O'
+    Molecule.ElementQnts  = '1 1'
+    Molecule.MolarMass    = 30.0061e-3
+    Molecule.FormationE   = 90773.e0
+    Molecule.LinFactor    = 1
+    Molecule.SymmFactor   = 1.0
+    Molecule.ThetaRot     = 2.45
+    Molecule.ThetaVib     = 2740.0
+    Molecule.ElecDeg      = 3.0
+
+    return Molecule
+
+
+################################################################################################################
 ### CO
 def GetProperties_CO( Molecule ):   
 

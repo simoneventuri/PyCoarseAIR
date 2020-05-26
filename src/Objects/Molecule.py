@@ -245,7 +245,7 @@ class groupedmolecule(object):
             GroupsSuffix = InputData.Kin.GroupsOutSuffix
 
 
-        PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+        PathToFile = Syst.PathToHDF5File
         f          = h5py.File(PathToFile, 'a')
 
         TStr       = 'T_' + str(int(TTra)) + '_' + str(int(TInt))
@@ -436,7 +436,7 @@ class molecule(object):
     def Read_Levels( self, InputData, Syst ):
         print('      [Molecule.py - Read_Levels]: Reading Level Properties')
 
-        PathToFile  = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+        PathToFile    = Syst.PathToHDF5File
         HDF5Exist_Flg = path.exists(PathToFile)
         if (HDF5Exist_Flg):
             f = h5py.File(PathToFile, 'a')
@@ -505,7 +505,7 @@ class molecule(object):
         print('      [Molecule.py - Read_qnsEnBin]: Reading Level To Group Mapping')
 
        
-        PathToFile  = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+        PathToFile  = Syst.PathToHDF5File
         f           = h5py.File(PathToFile, 'a')
         TempStr     = self.Name + '/Levelg'
         PresentFlg  = TempStr in f.keys()
@@ -567,7 +567,7 @@ class molecule(object):
     def Load_Levels_HDF5( self, Syst ):
         print('        [Molecule.py - Load_Levels_HDF5]: Loading Data')
 
-        PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+        PathToFile    = Syst.PathToHDF5File
         HDF5Exist_Flg = path.exists(PathToFile)
         if (HDF5Exist_Flg):
             f = h5py.File(PathToFile, 'a')
@@ -613,7 +613,7 @@ class molecule(object):
     def Load_qnsEnBin_HDF5( self, InputData, Syst ):
         print('        [Molecule.py - Load_qnsEnBin_HDF5]: Loading Data')
 
-        PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+        PathToFile    = Syst.PathToHDF5File
         HDF5Exist_Flg = path.exists(PathToFile)
         if (HDF5Exist_Flg):
             f = h5py.File(PathToFile, 'a')
@@ -638,7 +638,7 @@ class molecule(object):
     def Load_PartFuncsAndEnergiesAtT_HDF5( self, Syst, iT, TTra, TInt ):
         print('        [Molecule.py - Load_PartFuncsAndEnergiesAtT_HDF5]: Loading Data')
 
-        PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+        PathToFile = Syst.PathToHDF5File
         f          = h5py.File(PathToFile, 'a')
 
         TStr    = 'T_' + str(int(TTra)) + '_' + str(int(TInt))
@@ -663,7 +663,7 @@ class molecule(object):
     def Save_Levels_HDF5( self, Syst ):
         print('        [Molecule.py - Save_Levels_HDF5]: Saving Data')
 
-        PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+        PathToFile    = Syst.PathToHDF5File
         HDF5Exist_Flg = path.exists(PathToFile)
         if (HDF5Exist_Flg):
             f = h5py.File(PathToFile, 'a')
@@ -733,7 +733,7 @@ class molecule(object):
     def Save_qnsEnBin_HDF5( self, InputData, Syst ):
         print('        [Molecule.py - Save_qnsEnBin_HDF5]: Saving Data')
 
-        PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+        PathToFile    = Syst.PathToHDF5File
         #HDF5Exist_Flg = path.exists(PathToFile)
         #if (HDF5Exist_Flg):
         f = h5py.File(PathToFile, 'a')
@@ -771,7 +771,7 @@ class molecule(object):
     def Save_PartFuncsAndEnergiesAtT_HDF5( self, Syst, TTra, TInt, iT ):
         print('        [Molecule.py - Save_PartFuncsAndEnergiesAtT_HDF5]: Saving Data')
 
-        PathToFile = Syst.PathToHDF5 + '/' + Syst.NameLong + '.hdf5'
+        PathToFile    = Syst.PathToHDF5File
         #HDF5Exist_Flg = path.exists(PathToFile)
         #if (HDF5Exist_Flg):
         f = h5py.File(PathToFile, 'a')

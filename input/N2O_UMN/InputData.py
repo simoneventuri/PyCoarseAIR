@@ -29,7 +29,7 @@ class inputdata(object):
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
 
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([2500.0, 7500.0, 12500.0, 15000.0])
+        self.TranVec                   = np.array([10000.0]) #np.array([2500.0, 5000.0, 7500.0, 10000.0, 12500.0, 15000.0, 20000.0])
         self.T0                        = 300.0
         self.iPES                      = 0
 
@@ -39,9 +39,9 @@ class inputdata(object):
 
 
         ### CHEMICAL SYSTEM SPECIFIC
-        self.SystNameLong              = 'CO2_NASA'
+        self.SystNameLong              = 'N2O_UMN'
         self.OldVersion_IntFlg         = 1
-        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CG-QCT/run_CO2_ALL/Test/'
+        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CG-QCT/run_N2O_UMN/Test/'
         self.OutputWriteFldr           = OutputWriteFldr 
         self.SuffixName                = ''
 

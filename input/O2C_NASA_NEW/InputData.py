@@ -29,7 +29,7 @@ class inputdata(object):
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
 
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([2500.0, 7500.0, 12500.0, 15000.0])
+        self.TranVec                   =  np.array([5000.0]) #np.array([5000.0, 10000.0, 20000.0])
         self.T0                        = 300.0
         self.iPES                      = 0
 
@@ -39,9 +39,9 @@ class inputdata(object):
 
 
         ### CHEMICAL SYSTEM SPECIFIC
-        self.SystNameLong              = 'CO2_NASA'
-        self.OldVersion_IntFlg         = 1
-        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CG-QCT/run_CO2_ALL/Test/'
+        self.SystNameLong              = 'O2C_NASA'
+        self.OldVersion_IntFlg         = 0
+        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CoarseAIR/O2C_ALL/Test/'
         self.OutputWriteFldr           = OutputWriteFldr 
         self.SuffixName                = ''
 
@@ -68,7 +68,7 @@ class kinetics(object):
         ## Writing Kinetics Data
         self.Write_Flg                  = True
         self.WriteFldr                  = DtbWriteFldr
-        self.WriteDiss_Flg              = True 
+        self.WriteDiss_Flg              = True
         self.CorrFactor                 = 1.0
         self.DissTypes                  = np.array([0, 1, 2])
         self.WriteInel_Flg              = True
