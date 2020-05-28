@@ -66,13 +66,13 @@ class kinetics(object):
 
 
         ## Writing Kinetics Data
-        self.Write_Flg                  = True
+        self.Write_Flg                  = False
         self.WriteFldr                  = DtbWriteFldr
-        self.WriteDiss_Flg              = True 
+        self.WriteDiss_Flg              = False 
         self.CorrFactor                 = 1.0
         self.DissTypes                  = np.array([0, 1, 2])
-        self.WriteInel_Flg              = True
-        self.WriteExch_Flg              = True
+        self.WriteInel_Flg              = False
+        self.WriteExch_Flg              = False
 
         self.WriteExoth_Flg             = False
         self.WriteQB_IntFlg             = 2

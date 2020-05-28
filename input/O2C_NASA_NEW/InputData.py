@@ -29,7 +29,7 @@ class inputdata(object):
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
 
         ### CASE SPECIFIC
-        self.TranVec                   =  np.array([5000.0]) #np.array([5000.0, 10000.0, 20000.0])
+        self.TranVec                   = np.array([5000.0, 10000.0, 20000.0])
         self.T0                        = 300.0
         self.iPES                      = 0
 
@@ -66,13 +66,13 @@ class kinetics(object):
 
 
         ## Writing Kinetics Data
-        self.Write_Flg                  = True
+        self.Write_Flg                  = False
         self.WriteFldr                  = DtbWriteFldr
-        self.WriteDiss_Flg              = True
+        self.WriteDiss_Flg              = False
         self.CorrFactor                 = 1.0
         self.DissTypes                  = np.array([0, 1, 2])
-        self.WriteInel_Flg              = True
-        self.WriteExch_Flg              = True
+        self.WriteInel_Flg              = False
+        self.WriteExch_Flg              = False
 
         self.WriteExoth_Flg             = True
         self.WriteQB_IntFlg             = 2

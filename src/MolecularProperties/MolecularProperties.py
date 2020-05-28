@@ -69,7 +69,7 @@ def GetProperties_NO( Molecule ):
     Molecule.SymmFactor   = 1.0
     Molecule.ThetaRot     = 2.45
     Molecule.ThetaVib     = 2740.0
-    Molecule.ElecDeg      = 3.0
+    Molecule.ElecDeg      = 4.0
 
     return Molecule
 
