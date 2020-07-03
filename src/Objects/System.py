@@ -822,7 +822,7 @@ class t_properties(object):
                 Qt = Qt * (Syst.CFDComp[iComp].Qt)**RxLxIdx[iComp]
                 Qe = Qe * (Syst.CFDComp[iComp].Qe)**RxLxIdx[iComp]
             
-            self.Proc[0].RecombRates = np.zeros((Syst.EqNStatesIn[0], Syst.NProcTypes))
+            self.Proc[0].RecombRates = self.Proc[0].Rates * 0.0
             for iLevel in range(Syst.EqNStatesIn[0]):
                 self.Proc[0].RecombRates[iLevel,:] = self.Proc[0].Rates[iLevel,:] * Syst.Molecule[0].T[self.iT-1].LevelQ[iLevel] * Qe * Qt
 
