@@ -28,6 +28,7 @@ AvN           = 6.0221409e+23
 AMUToKg       = 1.0 / AvN * 1.e-3
 DSWtoKg       = 1.e-3 / 1.8208e+03
 ATMToPa       = 101325.0
-
+Pi            = np.arccos(-1.0)
+KJK           = 1.380649e-23;
 Hartree_To_eV = 27.2113839712790
 eV_To_Hartree = 1.0 / Hartree_To_eV

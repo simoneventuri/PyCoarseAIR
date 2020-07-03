@@ -67,6 +67,14 @@ def Initialize_Data(InputData):
         Syst.HDF5Exist_Flg = False
         print("  [Initializing.py - Initialize_Data]: WARNING: The HDF5 File " + PathToFile + " corresponding to the System " + Syst.NameLong + " does not exist. I will create a new one." )    
 
+    if hasattr(InputData.Kin, 'SytOfComplemExch'):
+        Syst.PathToHDF5File_ComplExch = []
+        for iComplem in range(len(InputData.Kin.SytOfComplemExch)):
+            Syst.PathToHDF5File_ComplExch.append(Syst.PathToHDF5 + '/' + InputData.Kin.SytOfComplemExch[iComplem] + '.hdf5')
+            PathToFile = Syst.PathToHDF5File_ComplExch[iComplem]
+            if not os.path.isfile(PathToFile):
+                raise Exception("  [Initializing.py - Initialize_Data]: ERROR: The HDF5 File " + PathToFile + " corresponding to the System " + InputData.Kin.SytOfComplemExch[iComplem] + " does not exist!")
+
 
     ## Creating Output Folders
     print("  [Initializing.py - Initialize_Data]: Creating Output Folders")    

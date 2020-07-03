@@ -120,6 +120,97 @@ class t_properties(object):
 
 
     # ***************************************************************************************************************************
+    def Load_MicroRevRatesAtT_HDF5( self, Syst ):
+
+        if (Syst.NAtoms == 3):
+            print('    [System.py - Load_RatesAtT_HDF5]: Loading Rates for a System of 3 Atoms' )
+        
+            PathToFile    = Syst.PathToHDF5File
+            HDF5Exist_Flg = path.exists(PathToFile)
+            if (HDF5Exist_Flg):
+                f = h5py.File(PathToFile, 'a')
+            else:
+                f = {'key': 'value'}
+
+            TStr = 'T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/RatesMicroRev/'
+            grp  = f[TStr]
+
+            Data                       = grp["Diss"]
+            self.Proc[0].Rates         = Data[...]
+            Data                       = grp["Recomb"]
+            self.Proc[0].RecombRates   = Data[...]
+            Data                       = grp["Inel"]
+            self.Proc[1].RatesMicroRev = Data[...]
+
+            for iProc in range(2, Syst.NProcTypes):
+                ExchStr                              = "Exch_" + str(iProc-1)
+                Data                                 = grp[ExchStr]
+                self.ProcExch[iProc-2].RatesMicroRev = Data[...]
+
+            f.close()
+            
+        elif (Syst.NAtoms == 4):
+            print('    [System.py - Load_RatesAtT_HDF5]: Loading Rates for a System of 4 Atoms' )
+
+            PathToFile = Syst.PathToHDF5File
+            f          = h5py.File(PathToFile, "r")
+
+            TStr = 'T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/RatesMicroRev/'
+            grp  = f[TStr]
+
+            Data                       = grp["Diss"]
+            self.DissRates             = Data[...]
+            Data                       = grp["DissInel"]
+            self.Proc[0].Rates         = Data[...]
+            Data                       = grp["Inel"]
+            self.Proc[1].RatesMicroRev = Data[...]
+
+            for iProc in range(2, Syst.NProcTypes):
+                ExchStr                              = "Exch_" + str(iProc-1)
+                Data                                 = grp[ExchStr]
+                self.ProcExch[iProc-2].RatesMicroRev = Data[...]
+
+            f.close()
+    # ...........................................................................................................................
+
+
+
+    # ***************************************************************************************************************************
+    def Load_ComplementaryExchRatesAtT_HDF5( self, Syst, ComplemPath, ComplemProc ):
+
+        if (Syst.NAtoms == 3):
+            print('      [System.py - Load_ComplementaryExchRatesAtT_HDF5]: Loading Complementary Exchange Rates for a System of 3 Atoms' )
+        
+            PathToFile    = ComplemPath
+            print('      [System.py - Load_ComplementaryExchRatesAtT_HDF5]: Reading from HDF5 File: ' + ComplemPath )
+
+            HDF5Exist_Flg = path.exists(PathToFile)
+            if (HDF5Exist_Flg):
+                f = h5py.File(PathToFile, 'a')
+            else:
+                f = {'key': 'value'}
+
+            TStr      = 'T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/Rates/'
+            grp       = f[TStr]
+
+            iProc     = ComplemProc
+            ExchStr   = "Exch_" + str(iProc-1)
+            print('      [System.py - Load_ComplementaryExchRatesAtT_HDF5]: Reading Object: ' + ExchStr )
+
+            Data      = grp[ExchStr]
+            TempRates = Data[...]
+
+            f.close()
+            
+        elif (Syst.NAtoms == 4):
+            print('      [System.py - Load_ComplementaryExchRatesAtT_HDF5]: Not Implemented YET!' )
+
+        return TempRates
+    # ...........................................................................................................................
+
+
+
+    # ***************************************************************************************************************************
     def Read_RatesAtT_N3( self, InputData, Syst ):       
 
         if (Syst.NAtoms == 3):
@@ -360,10 +451,11 @@ class t_properties(object):
                     self.Proc[0].Rates[iStates,1] = RatesSplitted[1][0]   ### Dissociation from Pair 1
                     self.Proc[1].Rates[iStates,:] = RatesSplitted[1][1:]
                     for iP in range(1, 3):
-                        iMol = Syst.Pair[iP].ToMol
-                        self.Proc[0].Rates[iStates,0]    = self.Proc[0].Rates[iStates,0]  + RatesSplitted[iP+1][0] ### Overall Dissociation
-                        self.Proc[0].Rates[iStates,iP]   = self.Proc[0].Rates[iStates,iP] + RatesSplitted[iP+1][0] ### Dissociation after Exchange to iMol-th Molecule 
-                        self.Proc[iP+1].Rates[iStates,:] = RatesSplitted[iP+1][1:]
+                        iMol  = Syst.Pair[iP].ToMol
+                        iExch = Syst.Pair[iP].ToExch 
+                        self.Proc[0].Rates[iStates,0]       = self.Proc[0].Rates[iStates,0]       + RatesSplitted[iP+1][0] ### Overall Dissociation
+                        self.Proc[0].Rates[iStates,iExch+2] = self.Proc[0].Rates[iStates,iExch+2] + RatesSplitted[iP+1][0] ### Dissociation after Exchange to iMol-th Molecule 
+                        self.Proc[iP+1].Rates[iStates,:]    = RatesSplitted[iP+1][1:]
                 
             for iProc in range(2, 4):   
                 for iExch in range(2, Syst.NProcTypes):
@@ -556,6 +648,130 @@ class t_properties(object):
 
 
     # ***************************************************************************************************************************
+    def Save_MicroRevRatesAtT_HDF5( self, Syst ):
+
+        if (Syst.NAtoms == 3):
+
+            PathToFile    = Syst.PathToHDF5File
+            HDF5Exist_Flg = path.exists(PathToFile)
+            #if (HDF5Exist_Flg):
+            f = h5py.File(PathToFile, 'a')
+            #else:
+            #    f = {'key': 'value'}
+
+            TStr = 'T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/RatesMicroRev'       
+            if TStr in f.keys():
+                grp               = f[TStr]
+
+                Data      = grp["Diss"]
+                Data[...] = self.Proc[0].Rates
+                Data      = grp["Recomb"]
+                Data[...] = self.Proc[0].RecombRates
+                Data      = grp["Inel"]
+                Data[...] = self.Proc[1].RatesMicroRev
+
+                for iProc in range(2, Syst.NProcTypes):
+                    ExchStr   = "Exch_" + str(iProc-1)
+                    Data      = grp[ExchStr]
+                    Data[...] = self.ProcExch[iProc-2].RatesMicroRev
+
+            else:
+                grp           = f.create_group(TStr)
+
+                Proc0         = grp.create_dataset("Diss",   data=self.Proc[0].Rates,         compression="gzip", compression_opts=9)
+                Proc0         = grp.create_dataset("Recomb", data=self.Proc[0].RecombRates,   compression="gzip", compression_opts=9)
+                Proc1         = grp.create_dataset("Inel",   data=self.Proc[1].RatesMicroRev, compression="gzip", compression_opts=9)
+
+                for iProc in range(2, Syst.NProcTypes):
+                    ExchStr   = "Exch_" + str(iProc-1)
+                    ProcExchi = grp.create_dataset(ExchStr,  data=self.ProcExch[iProc-2].RatesMicroRev, compression="gzip", compression_opts=9)
+
+            f.close()
+
+        else:
+        
+            PathToFile = Syst.PathToHDF5File
+            f          = h5py.File(PathToFile, 'a')
+
+            TStr = 'T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/RatesMicroRev/'       
+            if TStr in f.keys():
+                grp               = f[TStr]
+
+                Data      = grp["Diss"]
+                Data[...] = self.DissRates
+                Data      = grp["Recomb"]
+                Data[...] = self.RecombRates
+                Data      = grp["DissInel"]
+                Data[...] = self.Proc[0].Rates
+                Data      = grp["Inel"]
+                Data[...] = self.Proc[1].Rates
+
+                for iProc in range(2, Syst.NProcTypes):
+                    ExchStr   = "Exch_" + str(iProc-1)
+                    Data      = grp[ExchStr]
+                    Data[...] = self.ProcExch[iProc-2].Rates
+
+            else:
+                grp           = f.create_group(TStr)
+
+                Proc00        = grp.create_dataset("Diss",     data=self.DissRates,                       compression="gzip", compression_opts=9)
+                Proc01        = grp.create_dataset("Recomb",   data=self.RecombRates,                     compression="gzip", compression_opts=9)
+                Proc0         = grp.create_dataset("DissInel", data=self.Proc[0].RatesMicroRev,           compression="gzip", compression_opts=9)
+                Proc1         = grp.create_dataset("Inel",     data=self.Proc[1].RatesMicroRev,           compression="gzip", compression_opts=9)
+
+                for iProc in range(2, Syst.NProcTypes):
+                    ExchStr   = "Exch_" + str(iProc-1)
+                    ProcExchi = grp.create_dataset(ExchStr,    data=self.ProcExch[iProc-2].RatesMicroRev, compression="gzip", compression_opts=9)
+
+            f.close()
+    # ...........................................................................................................................
+
+
+
+    # ***************************************************************************************************************************
+    def Save_GroupRatesAtT_HDF5( self, Syst, InputData ):
+
+        if (Syst.NAtoms == 3):
+
+            PathToFile    = Syst.PathToHDF5File
+            HDF5Exist_Flg = path.exists(PathToFile)
+            #if (HDF5Exist_Flg):
+            f = h5py.File(PathToFile, 'a')
+            #else:
+            #    f = {'key': 'value'}
+
+            TStr = 'T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/Rates' + InputData.Kin.GroupsOutSuffix     
+            if TStr in f.keys():
+                grp               = f[TStr]
+
+                Data      = grp["Diss"]
+                Data[...] = self.GroupedProc[0].Rates
+                Data      = grp["Inel"]
+                Data[...] = self.GroupedProc[1].Rates
+
+                for iProc in range(2, Syst.NProcTypes):
+                    ExchStr   = "Exch_" + str(iProc-1)
+                    Data      = grp[ExchStr]
+                    Data[...] = self.GroupedProcExch[iProc-2].Rates
+
+            else:
+                grp           = f.create_group(TStr)
+
+                Proc0         = grp.create_dataset("Diss",   data=self.GroupedProc[0].Rates,           compression="gzip", compression_opts=9)
+                Proc1         = grp.create_dataset("Inel",   data=self.GroupedProc[1].Rates,           compression="gzip", compression_opts=9)
+
+                for iProc in range(2, Syst.NProcTypes):
+                    ExchStr   = "Exch_" + str(iProc-1)
+                    ProcExchi = grp.create_dataset(ExchStr,  data=self.GroupedProcExch[iProc-2].Rates, compression="gzip", compression_opts=9)
+
+            f.close()
+        
+            
+    # ...........................................................................................................................
+
+
+
+    # ***************************************************************************************************************************
     def Transform_ProcToDiss( self, Syst ):
         if (Syst.NAtoms == 3):
             print('    [System.py - Transform_ProcToDiss]: Transforming Processes in Dissociation for 3 Atoms System')
@@ -584,28 +800,86 @@ class t_properties(object):
 
 
     # ***************************************************************************************************************************
-    def Compute_BackwardRates( self, Syst ):
+    def Compute_BackwardRates( self, Input, Syst, ExothFlg ):
+
+
+        for iComp in range(Syst.NCFDComp):
+            Syst.CFDComp[iComp].Qt = Plnck / np.sqrt( 2.0 * Pi * Syst.CFDComp[iComp].Mass * KJK * self.TTra )
+            print('    [System.py - Compute_BackwardRates]: Component Nb ' + str(iComp+1) + ' = ' + Syst.CFDComp[iComp].Name )
+            print('    [System.py - Compute_BackwardRates]:   Electronic    Partition Function: ' + str(Syst.CFDComp[iComp].Qe) )
+            print('    [System.py - Compute_BackwardRates]:   Translational Partition Function: ' + str(Syst.CFDComp[iComp].Qt) )
+
 
         if (Syst.NAtoms == 3):
-            print('    [System.py - Compute_BackwardRates]: Computing Backward Rates for 3 Atoms System at Temperature Nb ' + str(self.iT) + ', T = ' + str(int(self.TTra)) + ' K')
+            print('    [System.py - Compute_BackwardRates]: Reconstructing Backward Rates from Micro-Reversibility for 3 Atoms System at Temperature Nb ' + str(self.iT) + ', T = ' + str(int(self.TTra)) + ' K')
 
-            self.Proc[1].BckRates = self.Proc[1].Rates
+
+            print('    [System.py - Compute_BackwardRates]: Reconstructing Recombination Rates')
+            RxLxIdx = Syst.RxLxIdx[0,:]
+            Qt      = 1.0
+            Qe      = 1.0
+            for iComp in range(Syst.NCFDComp):
+                Qt = Qt * (Syst.CFDComp[iComp].Qt)**RxLxIdx[iComp]
+                Qe = Qe * (Syst.CFDComp[iComp].Qe)**RxLxIdx[iComp]
+            
+            self.Proc[0].RecombRates = np.zeros((Syst.EqNStatesIn[0], Syst.NProcTypes))
+            for iLevel in range(Syst.EqNStatesIn[0]):
+                self.Proc[0].RecombRates[iLevel,:] = self.Proc[0].Rates[iLevel,:] * Syst.Molecule[0].T[self.iT-1].LevelQ[iLevel] * Qe * Qt
+
+
+
+            print('    [System.py - Compute_BackwardRates]: Reconstructing Endothermic Inelastic Rates')
+            RxLxIdx = Syst.RxLxIdx[1,:]
+            Qt      = 1.0
+            Qe      = 1.0
+            for iComp in range(Syst.NCFDComp):
+                Qt = Qt * (Syst.CFDComp[iComp].Qt)**RxLxIdx[iComp]
+                Qe = Qe * (Syst.CFDComp[iComp].Qe)**RxLxIdx[iComp]
+
+
+            self.Proc[1].RatesMicroRev = self.Proc[1].Rates
             for iLevel in range(Syst.EqNStatesIn[0]):
                 for jLevel in range(Syst.EqNStatesIn[0]):
-                    if (Syst.Molecule[0].LevelEeV[iLevel] < Syst.Molecule[0].LevelEeV[jLevel]):
-                        self.Proc[1].BckRates[iLevel, jLevel] = self.Proc[1].Rates[jLevel, iLevel] * Syst.Molecule[0].T[self.iT-1].LevelQ[jLevel] / Syst.Molecule[0].T[self.iT-1].LevelQ[iLevel]
+                    if (ExothFlg * Syst.Molecule[0].LevelEeV[iLevel] < ExothFlg * Syst.Molecule[0].LevelEeV[jLevel]):
+                        self.Proc[1].RatesMicroRev[iLevel, jLevel] = self.Proc[1].Rates[jLevel, iLevel] * Syst.Molecule[0].T[self.iT-1].LevelQ[jLevel] / Syst.Molecule[0].T[self.iT-1].LevelQ[iLevel]
 
 
+            iMol     =  0
+            iComplem = -1
             for iProc in range(2, Syst.NProcTypes):
                 iExch = iProc-2
                 jMol  = Syst.ExchToMol[iExch]
 
-                self.ProcExch[iExch].BckRates = self.ProcExch[iExch].Rates
-                for iLevel in range(Syst.EqNStatesIn[0]):
-                    for jLevel in range(Syst.EqNStatesIn[jMol]):
-                        if (Syst.Molecule[0].LevelEeV[iLevel] < Syst.Molecule[jMol].LevelEeV[jLevel]):
-                            self.ProcExch[iExch].BckRates[iLevel, jLevel] = self.ProcExch[iExch].Rates[jLevel, iLevel] * Syst.Molecule[0].T[self.iT-1].LevelQ[jLevel] / Syst.Molecule[jMol].T[self.iT-1].LevelQ[iLevel]
-        
+                RxLxIdx = Syst.RxLxIdx[iProc,:]
+                Qt      = 1.0
+                Qe      = 1.0
+                for iComp in range(Syst.NCFDComp):
+                    Qt = Qt * (Syst.CFDComp[iComp].Qt)**RxLxIdx[iComp]
+                    Qe = Qe * (Syst.CFDComp[iComp].Qe)**RxLxIdx[iComp]
+                print('    [System.py - Compute_BackwardRates]:   Exchange Nb ' + str(iExch) + '; Qt = ' + str(Qt) + '; Qe = ' + str(Qe) )
+
+                if (jMol == 0):
+                    self.ProcExch[iExch].RatesMicroRev = self.ProcExch[iExch].Rates
+                    for iLevel in range(Syst.EqNStatesIn[0]):
+                        for jLevel in range(Syst.EqNStatesIn[jMol]):
+                            if (ExothFlg * Syst.Molecule[0].LevelEeV[iLevel] < ExothFlg * Syst.Molecule[jMol].LevelEeV[jLevel]):
+                                self.ProcExch[iExch].RatesMicroRev[iLevel, jLevel] = self.ProcExch[iExch].Rates[jLevel, iLevel] * Syst.Molecule[0].T[self.iT-1].LevelQ[jLevel] / Syst.Molecule[0].T[self.iT-1].LevelQ[iLevel]
+                else:
+                    iComplem    = iComplem + 1
+                    ComplemPath = Syst.PathToHDF5File_ComplExch[iComplem]
+                    ComplemProc = Input.Kin.ProcOfComplemExch[iComplem]
+                    TempRates   = self.Load_ComplementaryExchRatesAtT_HDF5( Syst, ComplemPath, ComplemProc )
+                    print('    [System.py - Compute_BackwardRates]:   ProcExch  has shape ' + str(self.ProcExch[iExch].Rates.shape) )
+                    print('    [System.py - Compute_BackwardRates]:   TempRates has shape ' + str(TempRates.shape) )
+                    print('    [System.py - Compute_BackwardRates]:   Initial Molecule has Nb Levels ' + str(Syst.EqNStatesIn[iMol]) )
+                    print('    [System.py - Compute_BackwardRates]:   Final   Molecule has Nb Levels ' + str(Syst.EqNStatesIn[jMol]) )
+                    self.ProcExch[iExch].RatesMicroRev = self.ProcExch[iExch].Rates
+                    for iLevel in range(Syst.EqNStatesIn[iMol]):
+                        for jLevel in range(Syst.EqNStatesIn[jMol]):
+                            if (ExothFlg * Syst.Molecule[iMol].LevelEeV[iLevel] < ExothFlg * Syst.Molecule[jMol].LevelEeV[jLevel]):
+                                self.ProcExch[iExch].RatesMicroRev[iLevel, jLevel] = TempRates[jLevel, iLevel] * Syst.Molecule[jMol].T[self.iT-1].LevelQ[jLevel] / Syst.Molecule[iMol].T[self.iT-1].LevelQ[iLevel] * Qe * Qt
+
+
         else:
             print('    [System.py - Compute_BackwardRates]: ERROR! Computation of Backward Rates for 4 Atoms System NOT IMPLEMENTED yet!')
     # ...........................................................................................................................
@@ -634,7 +908,7 @@ class t_properties(object):
                 iGroup = Syst.Molecule[0].GroupsOut.Mapping[iLevel]
                 for jLevel in range(Syst.EqNStatesIn[0]):
                     jGroup = Syst.Molecule[0].GroupsOut.Mapping[jLevel]
-                    self.GroupedProc[1].Rates[iGroup,jGroup] = self.GroupedProc[1].Rates[iGroup,jGroup] + self.Proc[1].BckRates[iLevel,jLevel] * Syst.Molecule[0].GroupsOut.T[self.iT].Expvec[iLevel] / Syst.Molecule[0].GroupsOut.T[self.iT].Q[iGroup]
+                    self.GroupedProc[1].Rates[iGroup,jGroup] = self.GroupedProc[1].Rates[iGroup,jGroup] + self.Proc[1].RatesMicroRev[iLevel,jLevel] * Syst.Molecule[0].GroupsOut.T[self.iT].Expvec[iLevel] / Syst.Molecule[0].GroupsOut.T[self.iT].Q[iGroup]
 
             print('      [System.py - Compute_GroupRates]:   Computing Grouped Exchange     Rates for Temperature Nb ' + str(self.iT) )
             for iProc in range(2, Syst.NProcTypes):
@@ -645,7 +919,7 @@ class t_properties(object):
                     iGroup = Syst.Molecule[0].GroupsOut.Mapping[iLevel]
                     for jLevel in range(Syst.EqNStatesIn[jMol]):
                         jGroup = Syst.Molecule[jMol].GroupsOut.Mapping[jLevel]
-                        self.GroupedProcExch[iExch].Rates[iGroup,jGroup] = self.GroupedProcExch[iExch].Rates[iGroup,jGroup] + self.ProcExch[iExch].BckRates[iLevel,jLevel] * Syst.Molecule[0].GroupsOut.T[self.iT].Expvec[iLevel] / Syst.Molecule[0].GroupsOut.T[self.iT].Q[iGroup]
+                        self.GroupedProcExch[iExch].Rates[iGroup,jGroup] = self.GroupedProcExch[iExch].Rates[iGroup,jGroup] + self.ProcExch[iExch].RatesMicroRev[iLevel,jLevel] * Syst.Molecule[0].GroupsOut.T[self.iT].Expvec[iLevel] / Syst.Molecule[0].GroupsOut.T[self.iT].Q[iGroup]
         
         if (Syst.NAtoms == 4):
             print('    [System.py - Compute_GroupRates]: ERROR! Computing Grouped Rates for 4 Atoms System NOT IMPLEMENTED Yet!')
@@ -724,7 +998,7 @@ class t_properties(object):
 
         self.Proc[1].PrefJumps = np.zeros((Syst.Molecule[0].NLevels, NJumps), dtype=np.int32)
         for iLevel in range(Syst.Molecule[0].NLevels):
-            TempVec = self.Proc[1].BckRates[iLevel, :]
+            TempVec = self.Proc[1].RatesMicroRev[iLevel, :]
             self.Proc[1].PrefJumps[iLevel,:] = np.argsort(TempVec)[-NJumps:] + 1
 
         for iProc in range(2, Syst.NProcTypes):
@@ -732,7 +1006,7 @@ class t_properties(object):
             
             self.ProcExch[iProc-2].PrefJumps = np.zeros((Syst.Molecule[0].NLevels, NJumps), dtype=np.int32)
             for iLevel in range(Syst.Molecule[0].NLevels):
-                TempVec =  self.ProcExch[iProc-2].BckRates[iLevel, :]
+                TempVec =  self.ProcExch[iProc-2].RatesMicroRev[iLevel, :]
                 self.ProcExch[iProc-2].PrefJumps[iLevel,:] = np.argsort(TempVec)[-NJumps:] + 1
     # ...........................................................................................................................
 
@@ -895,6 +1169,12 @@ class t_properties(object):
                     jToMol  = Syst.ExchToMol[iExch-2]
                     jToAtom = Syst.ExchToAtom[iExch-2] 
                     print('    [System.py - Write_Kinetics]: iExch =  ' + str(iExch-1) + ', Corresponding to Final Molecule Nb ' + str(jToMol+1) + ' and Atom Nb ' + str(jToAtom+1) )
+                    
+                    TempCoeff2A = 1.e10
+                    TempCoeff2B = -1.e10
+                    if (jToMol == 0):
+                        TempCoeff2A = 1.0
+                        TempCoeff2B = 1.0
 
                     if (InputData.Kin.WindAvrg_Flg):
                         ExchKinetics = TempFldr + 'Exch_Type' + str(iExch-1) + '_WindAvrg.dat' 
@@ -912,16 +1192,27 @@ class t_properties(object):
 
                     for iLevel in range(Syst.Molecule[0].NLevels):
                         if ( ( (iLevel >= InputData.Kin.MinStateOut[0] - 1) and (iLevel <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[0].LevelWrite_Flg[iLevel]) ):
-                            TempRates = self.ProcExch[iExch-2].Rates[iLevel,:]
+                            if (jToMol == 0):
+                                TempRates = self.ProcExch[iExch-2].Rates[iLevel,:]
+                            else:
+                                TempRates = self.ProcExch[iExch-2].RatesMicroRev[iLevel,:]
+    
                             if (InputData.Kin.WindAvrg_Flg):
                                 TempRates = Syst.Compute_WindAvrg_Rates( TempRates )                    
                             iiLevel  = Syst.Molecule[0].LevelNewMapping[iLevel]
 
                             for jLevel in range(Syst.Molecule[jToMol].NLevels):
-                                if ( ( (jLevel >= InputData.Kin.MinStateOut[1] - 1) and (jLevel <= InputData.Kin.MaxStateOut[1] - 1) ) and (Syst.Molecule[jToMol].LevelWrite_Flg[jLevel]) ):
-                                    if ((TempRates[jLevel] > 0.0) and ( TempCoeff * Syst.Molecule[0].LevelEEh[iLevel] > TempCoeff * Syst.Molecule[jToMol].LevelEEh[jLevel]) ):
+                                if ( ( (jLevel >= InputData.Kin.MinStateOut[1] - 1) and (jLevel <= InputData.Kin.MaxStateOut[1] - 1) ) and (Syst.Molecule[jToMol].LevelWrite_Flg[jLevel]) and (TempRates[jLevel] > 0.0) ):
+                                    if (jToMol == 0):
+                                        if ( TempCoeff * Syst.Molecule[0].LevelEEh[iLevel] > TempCoeff * Syst.Molecule[jToMol].LevelEEh[jLevel] ):
+                                            WiteOKFlg = True
+                                        else:
+                                            WiteOKFlg = False
+                                    else:
+                                        WiteOKFlg = True
+                                    if (WiteOKFlg):
                                         jjLevel  = Syst.Molecule[jToMol].LevelNewMapping[jLevel]
-                                        
+
                                         if (InputData.Kin.WriteFormat == 'PLATO'):
                                             ProcName = Syst.Molecule[0].Name + '(' + str(iiLevel+1) + ')+' + Syst.Atom[2].Name + '=' + Syst.Molecule[jToMol].Name + '(' + str(jjLevel+1) + ')+' + Syst.Atom[jToAtom].Name
                                             Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,6\n' % TempRates[jLevel]
@@ -1289,19 +1580,27 @@ class t_properties(object):
                     TempRates = self.GroupedProcExch[iExch].Rates[iGroup,:]                  
 
                     for jGroup in range(Syst.EqNStatesOut[jMol]):
-                        if ((TempRates[jGroup] > 0.0) and (Syst.Molecule[0].GroupsOut.T[self.iT-1].EeV[iGroup] > Syst.Molecule[jMol].GroupsOut.T[self.iT-1].EeV[jGroup]) ):
-                                
-                            if (InputData.Kin.WriteFormat == 'PLATO'):
-                                ProcName = Syst.Molecule[0].Name + '(' + str(iGroup+1) + ')+' + Syst.Atom[2].Name + '=' + Syst.Molecule[jMol].Name + '(' + str(jGroup+1) + ')+' + Syst.Atom[jAtom].Name
-                                Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,6\n' % TempRates[jGroup]
-                                
-                            elif (InputData.Kin.WriteFormat == 'csv'):
-                                Line     = '%d,%d,%e\n' % (iGroup+1, jGroup+1, float(TempRates[jGroup]))
+                        if (TempRates[jGroup] > 0.0):
+                            if (jMol == 0):
+                                if (Syst.Molecule[0].GroupsOut.T[self.iT-1].EeV[iGroup] > Syst.Molecule[jMol].GroupsOut.T[self.iT-1].EeV[jGroup]):
+                                    WriteOKFlg = True
+                                else:
+                                    WriteOKFlg = False
+                            else:
+                                WriteOKFlg = True
 
-                            elif (InputData.Kin.WriteFormat == 'custom'):
-                                print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+                            if (WriteOKFlg):
+                                if (InputData.Kin.WriteFormat == 'PLATO'):
+                                    ProcName = Syst.Molecule[0].Name + '(' + str(iGroup+1) + ')+' + Syst.Atom[2].Name + '=' + Syst.Molecule[jMol].Name + '(' + str(jGroup+1) + ')+' + Syst.Atom[jAtom].Name
+                                    Line     = ProcName + ':%.4e,+0.0000E+00,+0.0000E+00,6\n' % TempRates[jGroup]
+                                    
+                                elif (InputData.Kin.WriteFormat == 'csv'):
+                                    Line     = '%d,%d,%e\n' % (iGroup+1, jGroup+1, float(TempRates[jGroup]))
 
-                            csvkinetics.write(Line)
+                                elif (InputData.Kin.WriteFormat == 'custom'):
+                                    print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+
+                                csvkinetics.write(Line)
 
                 csvkinetics.close()
     # ...........................................................................................................................
@@ -1450,18 +1749,41 @@ class system(object):
             
 
             if (InputData.Kin.WriteQB_IntFlg < 2):
-                print('  [System.py - Read_Rates]: Considering Dissociation the Inelastic and Exchange Processes to Excluded Levels')
+                print('  [System.py - Read_Rates]: Considering as Dissociation some of the Inelastic and Exchange Processes')
                 self.T[iT-1].Transform_ProcToDiss( self )
 
 
-            if ( (InputData.Kin.RatesPrefJumps_Flg) or (InputData.Kin.GroupsOut_Flg)):
-                print('  [System.py - Read_Rates]: Computing Backward Rates for Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K)')
-                self.T[iT-1].Compute_BackwardRates( self )
+            if ( (InputData.Kin.RatesPrefJumps_Flg) or (InputData.Kin.GroupsOut_Flg) or (InputData.Kin.WriteMicroRevCorrection) ):
+                
+                PathToFile = self.PathToHDF5File
+                f          = h5py.File(PathToFile, 'a')
+                TStr       = 'T_' + str(int(self.T[iT-1].TTra)) + '_' + str(int(self.T[iT-1].TInt)) + '/RatesMicroRev/'
+                if TStr in f.keys():
+                    
+                    print('  [System.py - Read_Rates]: Reading Backward Rates for Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K)')
+                    self.T[iT-1].Load_MicroRevRatesAtT_HDF5( self )
+                
+                else:             
+                    
+                    print('  [System.py - Read_Rates]: Computing Backward Rates for Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K)')
+                    if (InputData.Kin.WriteExoth_Flg):
+                        ExothFlg =  1.0
+                    else:
+                        ExothFlg = -1.0
+
+                    self.T[iT-1].Compute_BackwardRates( InputData, self, ExothFlg )
+
+                    if (InputData.Kin.WriteMicroRevCorrection):
+                        print('  [System.py - Read_Rates]: Saving Rates Corrected for Micro Reveresibility at Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K) in the HDF5 File')
+                        self.T[iT-1].Save_MicroRevRatesAtT_HDF5( self )
 
 
             if (InputData.Kin.GroupsOut_Flg):
                 print('  [System.py - Read_Rates]: Computing Grouped Rates for Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K)')
                 self.T[iT-1].Compute_GroupRates( self )
+
+                print('  [System.py - Read_Rates]: Saving Grouped Rates for Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K)')
+                self.T[iT-1].Save_GroupRatesAtT_HDF5( self, InputData )
 
 
             if (InputData.Kin.CorrFactor != 1.0):   
@@ -1496,7 +1818,7 @@ class system(object):
                 print('  [System.py - Read_Rates]: Packing and Unpacking Dissociation Rates for Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K)')
                 self.T[iT-1].PackUnpackDiss( InputData, self )
 
-            if (InputData.Kin.Write_Flg):
+            if (InputData.Kin.Write_Flg) and (not InputData.Kin.GroupsOutWrite_Flg):
                 print('  [System.py - Read_Rates]: Writing Kinetics File for Temperature Nb ' + str(iT) + ' (T = ' + str(int(self.T[iT-1].TTra)) + 'K)')
                 self.T[iT-1].Write_Kinetics( InputData, self, Temp )
 
@@ -1512,11 +1834,21 @@ class system(object):
                         del self.T[iT-1].Proc[iProc].Rates
                     for iProc in range(2, self.NProcTypes):
                         del self.T[iT-1].ProcExch[iProc-2].Rates
+                    
+                    if hasattr(self.T[iT-1].Proc[1], 'RatesMicroRev'):
+                        del self.T[iT-1].Proc[1].RatesMicroRev
+                        for iProc in range(2, self.NProcTypes):
+                            del self.T[iT-1].ProcExch[iProc-2].RatesMicroRev
                 else:
                     for iProc in range(4):
                         del self.T[iT-1].Proc[iProc].Rates
                     for iProc in range(2, self.NProcTypes):
                         del self.T[iT-1].ProcExch[iProc-2].Rates
+                    
+                    if hasattr(self.T[iT-1].Proc[1], 'RatesMicroRev'):
+                        del self.T[iT-1].Proc[1].RatesMicroRev
+                        for iProc in range(2, self.NProcTypes):
+                            del self.T[iT-1].ProcExch[iProc-2].RatesMicroRev
 
         # print('  [System.py - Read_Rates]: Saving Thermal Rates\n')
         # self.Write_ThermalRates( InputData, Temp )

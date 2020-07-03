@@ -29,7 +29,7 @@ class inputdata(object):
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
 
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([10000.0]) #np.array([2500.0, 5000.0, 7500.0, 10000.0, 12500.0, 15000.0, 20000.0])
+        self.TranVec                   = np.array([5000.0, 10000.0, 20000.0])  #np.array([2500.0, 5000.0, 7500.0, 10000.0, 12500.0, 15000.0, 20000.0]) ##
         self.T0                        = 300.0
         self.iPES                      = 0
 
@@ -68,7 +68,7 @@ class kinetics(object):
         ## Writing Kinetics Data
         self.Write_Flg                  = True
         self.WriteFldr                  = DtbWriteFldr
-        self.WriteDiss_Flg              = True 
+        self.WriteDiss_Flg              = True
         self.CorrFactor                 = 1.0
         self.DissTypes                  = np.array([0, 1, 2, 3])
         self.WriteInel_Flg              = True
@@ -77,6 +77,10 @@ class kinetics(object):
         self.WriteExoth_Flg             = True
         self.WriteQB_IntFlg             = 2
         self.WriteFormat                = 'PLATO'
+
+        self.WriteMicroRevCorrection    = True
+        self.SytOfComplemExch           = ['O2C_NASA']
+        self.ProcOfComplemExch          = np.array([2], dtype=np.int64)
 
 
         ## Resolution of the Kinetics Data in Input? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
@@ -87,15 +91,39 @@ class kinetics(object):
         self.GroupsInPathsToMapping     = ['']
         self.GroupsInSuffix             = ''
 
+
         ## Resolution of the Kinetics Data in Output? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
-        self.MolResolutionOut           = ['StS', 'StS']
         self.MinStateOut                = np.array([     0,      0], dtype=np.int64)
         self.MaxStateOut                = np.array([100000, 100000], dtype=np.int64)
-        self.NGroupsOut                 = []
-        self.GroupsOutPathsToMapping    = ['']
+        #### StS
+        self.MolResolutionOut           = ['StS', 'StS']
         self.GroupsOut_Flg              = False
         self.GroupsOutWrite_Flg         = False
+        self.GroupsOutPathsToMapping    = ['']
+        self.NGroupsOut                 = np.array([45], dtype=np.int64)
         self.GroupsOutSuffix            = ''
+        # ### CGM DP
+        # self.MolResolutionOut           = ['CGM', 'CGM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/CO2_NASA/CO/LevelsMap_DP83.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/CO2_NASA/O2/LevelsMap_DP49.csv']
+        # self.NGroupsOut                 = np.array([83,49], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_DP83' #_Phys_45Bins
+        # ### CGM RVE
+        # self.MolResolutionOut           = ['CGM', 'CGM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/CO2_NASA/CO/LevelsMap_RVE83.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/CO2_NASA/O2/LevelsMap_RVE49.csv']
+        # self.NGroupsOut                 = np.array([83,49], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_RVE83' #_Phys_45Bins
+        # ### VSM
+        # self.MolResolutionOut           = ['VSM', 'VSM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['']
+        # self.NGroupsOut                 = np.array([83,49], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_VSM' #_Phys_45Bins
+
 
 
         ## Packing + Unpacking Dissocation Rates:

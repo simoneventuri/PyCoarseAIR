@@ -29,7 +29,7 @@ class inputdata(object):
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
         
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([10000.0]) #np.array([1500.0, 2500.0, 5000.0, 6000.0, 8000.0, 10000.0, 12000.0, 14000.0, 15000.0, 20000.0])
+        self.TranVec                   = np.array([5000.0, 10000.0, 20000.0])
         self.T0                        = 300.0
         self.iPES                      = 0
 
@@ -41,7 +41,7 @@ class inputdata(object):
         ### CHEMICAL SYSTEM SPECIFIC
         self.SystNameLong              = 'O3_UMN'
         self.OldVersion_IntFlg         = 1
-        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CG-QCT/O3_ALL/Test/'
+        self.DtbReadFldr               = '/home/venturi/WORKSPACE/CG-QCT/O3Diss_PAPER/run_O3_ALL/Test/'
         self.OutputWriteFldr           = OutputWriteFldr 
         self.SuffixName                = ''
  
@@ -78,6 +78,10 @@ class kinetics(object):
         self.WriteQB_IntFlg             = 2
         self.WriteFormat                = 'PLATO'
 
+        self.WriteMicroRevCorrection    = True
+        #self.SytOfComplemExch           = 'O3_UMN'
+        #self.ProcOfComplemExch          = np.array([2], dtype=np.int64)
+
 
         ## Resolution of the Kinetics Data in Input? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
         self.MolResolutionIn            = ['StS']
@@ -87,22 +91,47 @@ class kinetics(object):
         self.GroupsInPathsToMapping     = ['']
         self.GroupsInSuffix             = ''
 
+
         ## Resolution of the Kinetics Data in Output? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
-        self.MolResolutionOut           = ['StS']
         self.MinStateOut                = np.array([     0,      0], dtype=np.int64)
         self.MaxStateOut                = np.array([100000, 100000], dtype=np.int64)
-        self.NGroupsOut                 = []
-        self.GroupsOutPathsToMapping    = ['']
+        #### StS
+        self.MolResolutionOut           = ['StS']
         self.GroupsOut_Flg              = False
         self.GroupsOutWrite_Flg         = False
-        self.GroupsOutSuffix            = '' #_Phys_45Bins
+        self.GroupsOutPathsToMapping    = ['']
+        self.NGroupsOut                 = np.array([45], dtype=np.int64)
+        self.GroupsOutSuffix            = ''
+        # ### CGM DP
+        # self.MolResolutionOut           = ['CGM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_DP45.csv']
+        # self.NGroupsOut                 = np.array([45], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_DP45' #_Phys_45Bins
+        # ### CGM RVE
+        # self.MolResolutionOut           = ['CGM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_RVE45.csv']
+        # self.NGroupsOut                 = np.array([45], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_RVE45' #_Phys_45Bins
+        # ### VSM
+        # self.MolResolutionOut           = ['VSM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['']
+        # self.NGroupsOut                 = np.array([45], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_VSM' #_Phys_45Bins
+
+
 
 
         ## Packing + Unpacking Dissocation Rates:
         self.PackUnpackDiss_Flg         = False
-        self.PackUnpackType             = ['VSM']
-        self.PackUnpackPathsToMapping   = ['/home/venturi/WORKSPACE/O3Diss_Database/Run_0D/database/grouping/O3_UMN/O2_Mapping_VS.csv']
-        self.PackUnpackSuffix           = '_VS' #_Phys_45Bins
+        self.PackUnpackType             = ['CGM']
+        self.PackUnpackPathsToMapping   = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/GroupingIdxs_45Bins_WExch.csv']
+        self.PackUnpackSuffix           = '_45Amal' #_Phys_45Bins
 
 
         ## Correcting Kinetics Based on Window-Averaging

@@ -88,13 +88,13 @@ class groupedmolecule(object):
 
         self.Compute_GroupProps( NLevels, Levelg, LevelEeV, LevelWrite_Flg )
 
-        if (In_Flg >= 0):
+        # if (In_Flg >= 0):
 
-            for iT in Temp.iTVec:
-                TTra = Temp.TranVec[iT-1]
-                TInt = TTra
+        #     for iT in Temp.iTVec:
+        #         TTra = Temp.TranVec[iT-1]
+        #         TInt = TTra
                 
-                self.Save_PartFuncsAndEnergiesAtT_HDF5( InputData, Syst, TTra, TInt, iT, In_Flg )
+        #         self.Save_PartFuncsAndEnergiesAtT_HDF5( InputData, Syst, TTra, TInt, iT, In_Flg )
     # ...........................................................................................................................
 
 
@@ -338,7 +338,8 @@ class molecule(object):
 
         self.Levelg            = 0.0
         self.LevelQ            = 0.0
-        self.LevelToGroupIn      = 0
+        self.LevelToGroupIn    = 0
+        self.LevelToGroupOut   = 0
 
         self.NTTran            = NTTran
         self.T                 = [t_properties() for iTTran in range(NTTran)]
@@ -367,7 +368,7 @@ class molecule(object):
             self.EqNStatesIn = self.Nvqn
             print('    [Molecule.py - Initialize]:   We are Starting from a Vibrational Specific Molecule ' + self.Name + '. Nb of Groups = ' + str(self.EqNStatesIn) )
         elif ( self.KinMthdIn  == 'CGM' ): 
-            self.EqNStatesIn = InputData.NGroupsIn[iMol]
+            self.EqNStatesIn = InputData.Kin.NGroupsIn[iMol]
             print('    [Molecule.py - Initialize]:   We are Starting from a Coarse-Grained Molecule ' + self.Name + '. Nb of Groups = ' + str(self.EqNStatesIn) )
 
         self.KinMthdOut  = InputData.Kin.MolResolutionOut[iMol]
@@ -378,7 +379,7 @@ class molecule(object):
             self.EqNStatesOut = self.Nvqn
             print('    [Molecule.py - Initialize]:   We are Ending with a Vibrational Specific Molecule ' + self.Name + '. Nb of Groups = ' + str(self.EqNStatesOut) )
         elif ( self.KinMthdOut  == 'CGM' ): 
-            self.EqNStatesOut = InputData.NGroupsOut[iMol]
+            self.EqNStatesOut = InputData.Kin.NGroupsOut[iMol]
             print('    [Molecule.py - Initialize]:   We are Ending with a Coarse-Grained Molecule ' + self.Name + '. Nb of Groups = ' + str(self.EqNStatesOut) )
              
 
@@ -406,6 +407,9 @@ class molecule(object):
             self.GroupsOut.Write_InitialConditions( InputData, Syst, Temp, 0 )
             
             self.GroupsOut.Write_ThermoProperties( InputData, Syst, Temp, 0 )
+
+            self.LevelToGroupOut = self.GroupsOut.Mapping + 1
+            self.Save_qnsEnBinOut_HDF5( InputData, Syst )
 
             for iT in Temp.iTVec:
                 self.T[iT-1].EqEeV0Out = self.GroupsOut.T[iT-1].EeV
@@ -551,9 +555,9 @@ class molecule(object):
             else:
                     
                 #self.T[iT-1].LevelEeV    = self.LevelEEh * Hartree_To_eV
-                self.T[iT-1].LevelQE      = np.exp( - self.LevelEeV * Ue / (TTra * UKb) )
+                self.T[iT-1].LevelQE      = np.exp( - (self.LevelEeV - self.LevelVMax[0]) * Ue / (TTra * UKb) )
                 self.T[iT-1].LevelQERatio = self.T[iT-1].LevelQE / np.sum(self.T[iT-1].LevelQE)
-                self.T[iT-1].LevelQ       = self.Levelg * np.exp( - self.LevelEeV * Ue / (TTra * UKb) )
+                self.T[iT-1].LevelQ       = self.Levelg * np.exp( - (self.LevelEeV - self.LevelVMax[0]) * Ue / (TTra * UKb) )
                 self.T[iT-1].LevelQRatio  = self.T[iT-1].LevelQ / np.sum(self.T[iT-1].LevelQ)
 
                 if (InputData.HDF5.Save_Flg):
@@ -761,6 +765,41 @@ class molecule(object):
                 grp        = f[TempStr1]
             Levelg         = grp.create_dataset("Levelg", data=self.Levelg,         compression="gzip", compression_opts=9)
             LevelToGroupIn = grp.create_dataset(StrTemp,  data=self.LevelToGroupIn, compression="gzip", compression_opts=9)
+
+        f.close()
+    # ...........................................................................................................................
+
+
+
+    # ***************************************************************************************************************************
+    def Save_qnsEnBinOut_HDF5( self, InputData, Syst ):
+        print('        [Molecule.py - Save_qnsEnBinOut_HDF5]: Saving Data')
+
+        PathToFile    = Syst.PathToHDF5File
+        #HDF5Exist_Flg = path.exists(PathToFile)
+        #if (HDF5Exist_Flg):
+        f = h5py.File(PathToFile, 'a')
+        #else:
+        #    f = {'key': 'value'}
+       
+        StrTemp   = "LevelToGroupOut" + InputData.Kin.GroupsOutSuffix
+
+        TempStr1   = self.CFDCompName
+        TempStr2   = TempStr1 + '/' + StrTemp
+        if TempStr2 in f.keys():
+            print('        [Molecule.py - Save_qnsEnBinOut_HDF5]: Overwriting the Level Properties in the HDF5 File')
+
+            grp       = f[TempStr1]
+            Data      = grp[StrTemp]
+            Data[...] = self.LevelToGroupOut
+
+        else:
+            print('        [Molecule.py - Save_qnsEnBinOut_HDF5]: Level Properties NOT Found in the HDF5 File. Saving them for the FIRST Time')
+            if (not (TempStr1 in f.keys())):
+                grp         = f.create_group(TempStr1)
+            else:
+                grp         = f[TempStr1]
+            LevelToGroupOut = grp.create_dataset(StrTemp,  data=self.LevelToGroupOut, compression="gzip", compression_opts=9)
 
         f.close()
     # ...........................................................................................................................
