@@ -924,6 +924,9 @@ def N4_NASA_Upload( Temp ):
     Syst.CFDComp[0].LineStyle = ':'
     Syst.CFDComp[1].LineStyle = '-.'
 
+    Syst.CFDComp[0].Qe        = 12.0
+    Syst.CFDComp[1].Qe        = 1.0
+
     Syst.MolToCFDComp       = np.array([1])
 
     Syst.ExchToMol          = np.array([[0,0]])
@@ -1045,6 +1048,233 @@ def NaNbNcNd_NASA_Upload( Temp ):
 
     Syst.CFDComp[0].LineStyle = ':'
     Syst.CFDComp[1].LineStyle = '-.'
+
+    Syst.CFDComp[0].Qe        = 12.0
+    Syst.CFDComp[1].Qe        = 1.0
+
+    Syst.MolToCFDComp[0]      = 1
+    Syst.MolToCFDComp[1]      = 1
+    Syst.MolToCFDComp[2]      = 1
+    Syst.MolToCFDComp[3]      = 1
+    Syst.MolToCFDComp[4]      = 1
+    Syst.MolToCFDComp[5]      = 1
+
+    Syst.ExchToMol          = np.array([[0,0]])
+    Syst.ExchToAtom         = np.array([[2,0]])
+
+    Syst.ColPartToComp      = 0
+
+    return Syst
+################################################################################################################
+
+
+################################################################################################################
+### O2 + O2 System (From UMN)
+def O4_UMN_Upload( Temp ):   
+
+    SystNameLong  = 'O4_UMN'
+    SystName      = 'O4'          
+
+    NAtoms        = 4
+    NMolecules    = 1
+    NDistMolecules= 1
+    NPairs        = 6
+    NCFDComp      = 2
+    NProcTypes    = 3
+    Syst          = system(SystNameLong, SystName, NAtoms, NMolecules, NDistMolecules, NPairs, NCFDComp, Temp.NTran, NProcTypes)
+    Syst.SymmFlg  = True
+
+    Syst.Atom[0].Name  = 'O'
+    Syst.Atom[1].Name  = 'O'
+    Syst.Atom[2].Name  = 'O'
+    Syst.Atom[3].Name  = 'O'
+
+    Syst.Atom[0].Color = np.array([0, 0, 1])
+    Syst.Atom[1].Color = np.array([0, 0, 1])
+    Syst.Atom[2].Color = np.array([0, 0, 1])
+    Syst.Atom[3].Color = np.array([0, 0, 1])
+
+    Syst.Atom[0].Size  = 200
+    Syst.Atom[1].Size  = 200
+    Syst.Atom[2].Size  = 200
+    Syst.Atom[3].Size  = 200
+
+    Syst.Atom[0].Mass  = 15.9994e-3
+    Syst.Atom[1].Mass  = 15.9994e-3
+    Syst.Atom[2].Mass  = 15.9994e-3
+    Syst.Atom[3].Mass  = 15.9994e-3
+
+
+    Syst.Molecule[0].Name             = 'O2'
+    Syst.Molecule[0].DissEn           = 0.0
+    Syst.Molecule[0].DegeneracyFactor = [0.5, 0.5]
+    Syst.Molecule[0].Mu               = Syst.Atom[0].Mass + Syst.Atom[1].Mass
+    #Syst.Molecule[0].NLevels          = 9092
+
+    Syst.Pair[0].Name  = 'O2'
+    Syst.Pair[1].Name  = 'O2'
+    Syst.Pair[2].Name  = 'O2'
+    Syst.Pair[3].Name  = 'O2'
+    Syst.Pair[4].Name  = 'O2'
+    Syst.Pair[5].Name  = 'O2'
+
+    Syst.Pair[0].ToMol = 0
+    Syst.Pair[1].ToMol = 0
+    Syst.Pair[2].ToMol = 0
+    Syst.Pair[3].ToMol = 0
+    Syst.Pair[4].ToMol = 0
+    Syst.Pair[5].ToMol = 0
+
+    Syst.Pair[0].Color = np.array([17, 17, 17]) / 256
+    Syst.Pair[1].Color = np.array([17, 17, 17]) / 256
+    Syst.Pair[2].Color = np.array([17, 17, 17]) / 256
+    Syst.Pair[3].Color = np.array([17, 17, 17]) / 256
+    Syst.Pair[4].Color = np.array([17, 17, 17]) / 256
+    Syst.Pair[5].Color = np.array([17, 17, 17]) / 256
+
+    Syst.CFDComp[0].Name   = 'O'
+    Syst.CFDComp[1].Name   = 'O2'
+
+    Syst.CFDComp[0].ToMol      = -1
+    Syst.CFDComp[1].ToMol      =  0
+    Syst.CFDComp[1].ToOppAtoms = np.array([0,0])
+
+    Syst.CFDComp[0].Mass    = Syst.Atom[0].Mass
+    Syst.CFDComp[1].Mass    = 2.0*Syst.Atom[2].Mass
+
+    Syst.CFDComp[0].Color   = np.array([ 102, 102, 102]) / 256
+    Syst.CFDComp[1].Color   = np.array([   0,   0,   0]) / 256
+
+    Syst.CFDComp[0].LineStyle = ':'
+    Syst.CFDComp[1].LineStyle = '-.'
+
+    Syst.CFDComp[0].Qe        = 9.0
+    Syst.CFDComp[1].Qe        = 3.0
+
+    Syst.MolToCFDComp[0]      = 1
+
+    Syst.ExchToMol          = np.array([[0,0]])
+    Syst.ExchToAtom         = np.array([[2,0]])
+
+    Syst.ColPartToComp      = 0
+
+    return Syst
+################################################################################################################
+
+
+################################################################################################################
+### O2 + O2 System (From UMN)
+def OaObOcOd_UMN_Upload( Temp ):   
+
+    SystNameLong  = 'OaObOcOd_UMN'
+    SystName      = 'OaObOcOd'          
+
+    NAtoms        = 4
+    NMolecules    = 6
+    NDistMolecules= 1
+    NPairs        = 6
+    NCFDComp      = 2
+    NProcTypes    = 3
+    Syst          = system(SystNameLong, SystName, NAtoms, NMolecules, NDistMolecules, NPairs, NCFDComp, Temp.NTran, NProcTypes)
+    Syst.SymmFlg  = True
+
+    Syst.Atom[0].Name  = 'O'
+    Syst.Atom[1].Name  = 'O'
+    Syst.Atom[2].Name  = 'O'
+    Syst.Atom[3].Name  = 'O'
+
+    Syst.Atom[0].Color = np.array([0, 0, 1])
+    Syst.Atom[1].Color = np.array([0, 0, 1])
+    Syst.Atom[2].Color = np.array([0, 0, 1])
+    Syst.Atom[3].Color = np.array([0, 0, 1])
+
+    Syst.Atom[0].Size  = 200
+    Syst.Atom[1].Size  = 200
+    Syst.Atom[2].Size  = 200
+    Syst.Atom[3].Size  = 200
+
+    Syst.Atom[0].Mass  = 15.9994e-3
+    Syst.Atom[1].Mass  = 15.9994e-3
+    Syst.Atom[2].Mass  = 15.9994e-3
+    Syst.Atom[3].Mass  = 15.9994e-3
+
+
+    Syst.Molecule[0].Name             = 'OaOb'
+    Syst.Molecule[1].Name             = 'OaOc'
+    Syst.Molecule[2].Name             = 'OaOd'
+    Syst.Molecule[3].Name             = 'ObOc'
+    Syst.Molecule[4].Name             = 'ObOd'
+    Syst.Molecule[5].Name             = 'OcOd'
+
+    Syst.Molecule[0].DissEn           = 0.0
+    Syst.Molecule[0].DegeneracyFactor = [0.5, 0.5]
+    Syst.Molecule[0].Mu               = Syst.Atom[0].Mass + Syst.Atom[1].Mass
+    #Syst.Molecule[0].NLevels          = 9092
+
+    Syst.Molecule[1].DissEn           = 0.0
+    Syst.Molecule[1].DegeneracyFactor = [0.5, 0.5]
+    Syst.Molecule[1].Mu               = Syst.Atom[0].Mass + Syst.Atom[1].Mass
+    #Syst.Molecule[1].NLevels          = 9092
+
+    Syst.Molecule[2].DissEn           = 0.0
+    Syst.Molecule[2].DegeneracyFactor = [0.5, 0.5]
+    Syst.Molecule[2].Mu               = Syst.Atom[0].Mass + Syst.Atom[1].Mass
+    #Syst.Molecule[2].NLevels          = 9092
+
+    Syst.Molecule[3].DissEn           = 0.0
+    Syst.Molecule[3].DegeneracyFactor = [0.5, 0.5]
+    Syst.Molecule[3].Mu               = Syst.Atom[0].Mass + Syst.Atom[1].Mass
+    #Syst.Molecule[3].NLevels          = 9092
+
+    Syst.Molecule[4].DissEn           = 0.0
+    Syst.Molecule[4].DegeneracyFactor = [0.5, 0.5]
+    Syst.Molecule[4].Mu               = Syst.Atom[0].Mass + Syst.Atom[1].Mass
+    #Syst.Molecule[4].NLevels          = 9092
+
+    Syst.Molecule[5].DissEn           = 0.0
+    Syst.Molecule[5].DegeneracyFactor = [0.5, 0.5]
+    Syst.Molecule[5].Mu               = Syst.Atom[0].Mass + Syst.Atom[1].Mass
+    #Syst.Molecule[5].NLevels          = 9092
+
+    Syst.Pair[0].Name  = 'O2'
+    Syst.Pair[1].Name  = 'O2'
+    Syst.Pair[2].Name  = 'O2'
+    Syst.Pair[3].Name  = 'O2'
+    Syst.Pair[4].Name  = 'O2'
+    Syst.Pair[5].Name  = 'O2'
+
+    Syst.Pair[0].ToMol = 0
+    Syst.Pair[1].ToMol = 1
+    Syst.Pair[2].ToMol = 2
+    Syst.Pair[3].ToMol = 3
+    Syst.Pair[4].ToMol = 4
+    Syst.Pair[5].ToMol = 5
+
+    Syst.Pair[0].Color = np.array([17, 17, 17]) / 256
+    Syst.Pair[1].Color = np.array([17, 17, 17]) / 256
+    Syst.Pair[2].Color = np.array([17, 17, 17]) / 256
+    Syst.Pair[3].Color = np.array([17, 17, 17]) / 256
+    Syst.Pair[4].Color = np.array([17, 17, 17]) / 256
+    Syst.Pair[5].Color = np.array([17, 17, 17]) / 256
+
+    Syst.CFDComp[0].Name   = 'O'
+    Syst.CFDComp[1].Name   = 'O2'
+
+    Syst.CFDComp[0].ToMol      = -1
+    Syst.CFDComp[1].ToMol      =  0
+    Syst.CFDComp[1].ToOppAtoms = np.array([0,0])
+
+    Syst.CFDComp[0].Mass    = Syst.Atom[0].Mass
+    Syst.CFDComp[1].Mass    = 2.0*Syst.Atom[2].Mass
+
+    Syst.CFDComp[0].Color   = np.array([ 102, 102, 102]) / 256
+    Syst.CFDComp[1].Color   = np.array([   0,   0,   0]) / 256
+
+    Syst.CFDComp[0].LineStyle = ':'
+    Syst.CFDComp[1].LineStyle = '-.'
+
+    Syst.CFDComp[0].Qe        = 9.0
+    Syst.CFDComp[1].Qe        = 3.0
 
     Syst.MolToCFDComp[0]      = 1
     Syst.MolToCFDComp[1]      = 1

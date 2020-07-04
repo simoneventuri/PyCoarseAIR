@@ -106,21 +106,21 @@ class kinetics(object):
         # self.MolResolutionOut           = ['CGM', 'CGM']
         # self.GroupsOut_Flg              = True
         # self.GroupsOutWrite_Flg         = True
-        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O2C_NASA/O2/LevelsMap_DP49.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O2C_NASA/CO/LevelsMap_DP83.csv']
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O2C_NASA/O2/LevelsMap_DPM49.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O2C_NASA/CO/LevelsMap_DPM83.csv']
         # self.NGroupsOut                 = np.array([49,83], dtype=np.int64)
         # self.GroupsOutSuffix            = '_DP83' #_Phys_45Bins
         # ### CGM RVE
         # self.MolResolutionOut           = ['CGM', 'CGM']
         # self.GroupsOut_Flg              = True
         # self.GroupsOutWrite_Flg         = True
-        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O2C_NASA/O2/LevelsMap_RVE49.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O2C_NASA/O2/LevelsMap_RVE83.csv']
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O2C_NASA/O2/LevelsMap_RVE49.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O2C_NASA/CO/LevelsMap_RVE83.csv']
         # self.NGroupsOut                 = np.array([49,83], dtype=np.int64)
         # self.GroupsOutSuffix            = '_RVE83' #_Phys_45Bins
         # ### VSM
         # self.MolResolutionOut           = ['VSM', 'VSM']
         # self.GroupsOut_Flg              = True
         # self.GroupsOutWrite_Flg         = True
-        # self.GroupsOutPathsToMapping    = ['']
+        # self.GroupsOutPathsToMapping    = ['','']
         # self.NGroupsOut                 = np.array([49,83], dtype=np.int64)
         # self.GroupsOutSuffix            = '_VSM' #_Phys_45Bins
 

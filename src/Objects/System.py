@@ -357,14 +357,18 @@ class t_properties(object):
 
 
     # ***************************************************************************************************************************
-    def Read_RatesFile( self, Syst, iProc ):
+    def Read_RatesFile( self, Syst, iProc, jProc ):
         #sed -i 's/D-/E-/g' *
 
         PESChar = ''
         if (Syst.iPES != 0):
             PESChar = '.' + str(Syst.iPES)
 
-        PathToFile = Syst.PathToReadFldr + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/Proc' + str(iProc+1) + '.csv' + PESChar
+        if (Syst.NAtoms == 3):
+            PathToFile = Syst.PathToReadFldr + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/i' + str(iProc+1) + '.csv' + PESChar
+        else:
+            PathToFile = Syst.PathToReadFldr + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/i' + str(iProc+1) + '_j' + str(jProc+1) + '.csv' + PESChar
+          
         #print(PathToFile)
         if (path.isfile(PathToFile)):
             count   = 0
@@ -518,7 +522,7 @@ class t_properties(object):
 
                         if (jStates >= jStatesStart):
                             RatesTempAll                            = np.zeros(Syst.Pair[2].NProcTot)
-                            [ProcessesTemp, RatesTemp, RatesSDTemp] = self.Read_RatesFile( Syst, i-1 )
+                            [ProcessesTemp, RatesTemp, RatesSDTemp] = self.Read_RatesFile( Syst, iStates, jStates )
                             ProcessesTemp = ProcessesTemp - 1
 
                             jProcc = -1

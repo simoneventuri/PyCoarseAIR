@@ -108,7 +108,7 @@ class kinetics(object):
         # self.MolResolutionOut           = ['CGM']
         # self.GroupsOut_Flg              = True
         # self.GroupsOutWrite_Flg         = True
-        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N3_NASA/N3/LevelsMap_DP61.csv']
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N3_NASA/N3/LevelsMap_DPM61.csv']
         # self.NGroupsOut                 = np.array([61], dtype=np.int64)
         # self.GroupsOutSuffix            = '_DP61' #_Phys_45Bins
         # ### CGM RVE

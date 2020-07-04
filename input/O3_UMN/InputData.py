@@ -20,7 +20,6 @@
 ##==============================================================================================================
 import numpy as np
 
-
 class inputdata(object):
 
     def __init__( self, WORKSPACE_PATH, CoarseAIRFldr, PyCoarseAIRFldr, DtbHDF5Fldr, DtbWriteFldr, OutputWriteFldr ):
@@ -106,7 +105,7 @@ class kinetics(object):
         # self.MolResolutionOut           = ['CGM']
         # self.GroupsOut_Flg              = True
         # self.GroupsOutWrite_Flg         = True
-        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_DP45.csv']
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_DPM45.csv']
         # self.NGroupsOut                 = np.array([45], dtype=np.int64)
         # self.GroupsOutSuffix            = '_DP45' #_Phys_45Bins
         # ### CGM RVE
