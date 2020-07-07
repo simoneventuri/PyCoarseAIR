@@ -29,7 +29,7 @@ class inputdata(object):
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
 
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([5000.0, 10000.0, 20000.0]) #np.array([2500.0, 5000.0, 7500.0, 10000.0, 12500.0, 15000.0, 20000.0])
+        self.TranVec                   = np.array([5000.0, 10000.0, 20000.0]) #np.array([2500.0, 5000.0, 7500.0, 10000.0, 15000.0, 20000.0])
         self.T0                        = 300.0
         self.iPES                      = 0
 

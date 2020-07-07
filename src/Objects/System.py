@@ -365,7 +365,8 @@ class t_properties(object):
             PESChar = '.' + str(Syst.iPES)
 
         if (Syst.NAtoms == 3):
-            PathToFile = Syst.PathToReadFldr + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/i' + str(iProc+1) + '.csv' + PESChar
+            #PathToFile = Syst.PathToReadFldr + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/i' + str(iProc+1) + '.csv' + PESChar
+            PathToFile = Syst.PathToReadFldr + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/Proc' + str(iProc+1) + '.csv' + PESChar
         else:
             PathToFile = Syst.PathToReadFldr + '/Rates/T_' + str(int(self.TTra)) + '_' + str(int(self.TInt)) + '/i' + str(iProc+1) + '_j' + str(jProc+1) + '.csv' + PESChar
           
@@ -446,7 +447,7 @@ class t_properties(object):
                 if ( (iStates >= InputData.Kin.MinStateIn[0] - 1) and (iStates <= InputData.Kin.MaxStateIn[0] - 1) ):
 
                     RatesTempAll                            = np.zeros(Syst.Pair[-1].NProcTot+1)
-                    [ProcessesTemp, RatesTemp, RatesSDTemp] = self.Read_RatesFile( Syst, iStates )
+                    [ProcessesTemp, RatesTemp, RatesSDTemp] = self.Read_RatesFile( Syst, iStates, 0 )
                     RatesTempAll[ProcessesTemp[:]-1]        = RatesTemp[:]
   
                     RatesSplitted                           = np.split( RatesTempAll, np.array([1, Syst.Pair[0].NProcTot, Syst.Pair[1].NProcTot, Syst.Pair[2].NProcTot]) )
@@ -547,7 +548,6 @@ class t_properties(object):
                                             if ( (kStates == 0) and (lStates == 0) ): 
                                                 self.DissRates[iStates, jStates, iP]                       = self.DissRates[iStates, jStates, iP]                       + RatesTempAll[iProc]
                                                 self.DissRates[iStates, jStates,  0]                       = self.DissRates[iStates, jStates,  0]                       + RatesTempAll[iProc]
-                                                print(iStates, jStates, iP, self.DissRates[iStates, jStates,  0])
                                             elif (kStates == 0):
                                                 iPair                                                      = iP-1
                                                 iPairTemp                                                  = Syst.NDistMolecules + iPair 
@@ -564,8 +564,6 @@ class t_properties(object):
                                                 iTemp1  = kStates-1
                                                 iTemp2  = lStates-1
                                                 self.Proc[iP].Rates[iStates, jStates, iTemp1, iTemp2]      = self.Proc[iP].Rates[iStates, jStates, iTemp1, iTemp2] + RatesTempAll[iProc]
-
-                            print(self.DissRates[iStates, jStates,  0])
                             
             for iProc in range(2, 4):
                 for iExch in range(2, Syst.NProcTypes):
@@ -1314,7 +1312,8 @@ class t_properties(object):
                         jStatesStart = iStates
                     for jStates in range(jStatesStart, NStates0_2):
                         jjStates = Syst.Molecule[Syst.Pair[5].ToMol].LevelNewMapping[jStates]
-                        if ( ( (iStates >= InputData.Kin.MinStateOut[0] - 1) and (iStates <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[iStates]) and ( (jStates >= InputData.Kin.MinStateOut[1] - 1) and (jStates <= InputData.Kin.MaxStateOut[1] - 1) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[jStates]) ) ):
+                        if ( ( (iStates >= InputData.Kin.MinStateOut[0] - 1) and (iStates <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[iStates]) and 
+                             ( (jStates >= InputData.Kin.MinStateOut[1] - 1) and (jStates <= InputData.Kin.MaxStateOut[1] - 1) ) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[jStates]) ):
 
                             for iComp in range(Syst.NCFDComp):
                                 if (Syst.CFDComp[iComp].ToMol >= 0):
@@ -1324,8 +1323,11 @@ class t_properties(object):
                                         kkStates = Syst.Molecule[iMol].LevelNewMapping[kStates]
                                         if ( ( (kkStates >= InputData.Kin.MinStateOut[2] - 1) and (kkStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[iMol].LevelWrite_Flg[kkStates]) ):
 
+                                            InEEh    = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[iStates] + Syst.Molecule[Syst.Pair[5].ToMol].T[self.iT-1].EqEeV0In[jStates]
+                                            FinEEh   = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[kStates]
+
                                             TempRate = self.Proc[0].Rates[iStates, jStates, kkStates, iMol]
-                                            if (TempRate > 0.0):
+                                            if (TempRate > 0.0): #  and ( TempCoeff * InEEh >= TempCoeff * FinEEh ):
 
                                                 if (InputData.Kin.WriteFormat == 'PLATO'):
                                                     Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
@@ -1371,7 +1373,8 @@ class t_properties(object):
                         jStatesStart = iStates
                     for jStates in range(jStatesStart, NStates0_2):
                         jjStates = Syst.Molecule[Syst.Pair[5].ToMol].LevelNewMapping[jStates]
-                        if ( ( (iStates >= InputData.Kin.MinStateOut[0] - 1) and (iStates <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[iStates]) and ( (jStates >= InputData.Kin.MinStateOut[1] - 1) and (jStates <= InputData.Kin.MaxStateOut[1] - 1) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[jStates]) ) ):
+                        if ( ( (iStates >= InputData.Kin.MinStateOut[0] - 1) and (iStates <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[iStates]) and 
+                             ( (jStates >= InputData.Kin.MinStateOut[1] - 1) and (jStates <= InputData.Kin.MaxStateOut[1] - 1) ) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[jStates]) ):
 
                             for kStates in range(NStates0_1):
                                 kkStates = Syst.Molecule[Syst.Pair[0].ToMol].LevelNewMapping[kStates]
@@ -1380,14 +1383,19 @@ class t_properties(object):
                                     lStatesStart = kStates
                                 for lStates in range(lStatesStart, NStates0_2):
                                     llStates = Syst.Molecule[Syst.Pair[5].ToMol].LevelNewMapping[lStates]
-                                    if ( ( (kStates >= InputData.Kin.MinStateOut[2] - 1) and (kStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[kStates]) and ( (lStates >= InputData.Kin.MinStateOut[3] - 1) and (lStates <= InputData.Kin.MaxStateOut[3] - 1) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[lStates]) ) ):
- 
-                                        TempRate = ( self.Proc[1].Rates[iStates, jStates, kStates, lStates]         + self.Proc[1].Rates[iStates, jStates, lStates, kStates] )
+                                    if ( ( (kStates >= InputData.Kin.MinStateOut[2] - 1) and (kStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[kStates]) and 
+                                         ( (lStates >= InputData.Kin.MinStateOut[3] - 1) and (lStates <= InputData.Kin.MaxStateOut[3] - 1) ) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[lStates]) ):
+                                        
+                                        if (Syst.SymmFlg):
+                                            TempRate = ( self.Proc[1].Rates[iStates, jStates, kStates, lStates]         + self.Proc[1].Rates[iStates, jStates, lStates, kStates] )
+                                        else:
+                                            TempRate = self.Proc[1].Rates[iStates, jStates, kStates, lStates]
 
                                         InEEh    = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[iStates] + Syst.Molecule[Syst.Pair[5].ToMol].T[self.iT-1].EqEeV0In[jStates]
                                         FinEEh   = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[kStates] + Syst.Molecule[Syst.Pair[5].ToMol].T[self.iT-1].EqEeV0In[lStates]
-                                        
-                                        if ((TempRate > 0.0) and ( TempCoeff * InEEh >= TempCoeff * FinEEh )):
+
+                                        if ((TempRate > 0.0) and ( TempCoeff * InEEh > TempCoeff * FinEEh )):
+                                            #if (TempRate > 0.0):
 
                                             if (InputData.Kin.WriteFormat == 'PLATO'):
                                                 Mol1_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
@@ -1441,7 +1449,8 @@ class t_properties(object):
                             jStatesStart = iStates
                         for jStates in range(jStatesStart, NStates0_2):
                             jjStates = Syst.Molecule[Syst.Pair[5].ToMol].LevelNewMapping[jStates]
-                            if ( ( (iStates >= InputData.Kin.MinStateOut[0] - 1) and (iStates <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[iStates]) and ( (jStates >= InputData.Kin.MinStateOut[1] - 1) and (jStates <= InputData.Kin.MaxStateOut[1] - 1) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[jStates]) ) ):
+                            if ( ( (iStates >= InputData.Kin.MinStateOut[0] - 1) and (iStates <= InputData.Kin.MaxStateOut[0] - 1) ) and (Syst.Molecule[Syst.Pair[0].ToMol].LevelWrite_Flg[iStates]) and 
+                                 ( (jStates >= InputData.Kin.MinStateOut[1] - 1) and (jStates <= InputData.Kin.MaxStateOut[1] - 1) ) and (Syst.Molecule[Syst.Pair[5].ToMol].LevelWrite_Flg[jStates]) ):
 
                                 for kStates in range(NBins_1):
                                     kMol     = Syst.ExchToMol[iExch-2,0]
@@ -1452,14 +1461,19 @@ class t_properties(object):
                                     for lStates in range(lStatesStart, NBins_2):
                                         lMol     = Syst.ExchToMol[iExch-2,1]
                                         llStates = Syst.Molecule[lMol].LevelNewMapping[lStates]
-                                        if ( ( (kStates >= InputData.Kin.MinStateOut[2] - 1) and (kStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[kMol].LevelWrite_Flg[kStates]) and ( (lStates >= InputData.Kin.MinStateOut[3] - 1) and (lStates <= InputData.Kin.MaxStateOut[3] - 1) and (Syst.Molecule[lMol].LevelWrite_Flg[lStates]) ) ):
- 
-                                            TempRate = ( self.ProcExch[iExch-2].Rates[iStates, jStates, kStates, lStates]      + self.ProcExch[iExch-2].Rates[iStates, jStates, lStates, kStates]  ) 
+                                        if ( ( (kStates >= InputData.Kin.MinStateOut[2] - 1) and (kStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[kMol].LevelWrite_Flg[kStates]) and 
+                                             ( (lStates >= InputData.Kin.MinStateOut[3] - 1) and (lStates <= InputData.Kin.MaxStateOut[3] - 1) ) and (Syst.Molecule[lMol].LevelWrite_Flg[lStates]) ):
+                                            
+                                            if (Syst.SymmFlg):
+                                                TempRate = ( self.ProcExch[iExch-2].Rates[iStates, jStates, kStates, lStates] + self.ProcExch[iExch-2].Rates[iStates, jStates, lStates, kStates] ) 
+                                            else:
+                                                TempRate = self.ProcExch[iExch-2].Rates[iStates, jStates, kStates, lStates]
 
                                             InEEh    = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[iStates]        + Syst.Molecule[Syst.Pair[5].ToMol].T[self.iT-1].EqEeV0In[jStates]
                                             FinEEh   = Syst.Molecule[Syst.ExchToMol[iExch-2,0]].T[self.iT-1].EqEeV0In[kStates] + Syst.Molecule[Syst.ExchToMol[iExch-2,1]].T[self.iT-1].EqEeV0In[lStates]
                                             
-                                            if ((TempRate > 0.0) and ( TempCoeff * InEEh >= TempCoeff * FinEEh )):
+                                            if ((TempRate > 0.0) and ( TempCoeff * InEEh > TempCoeff * FinEEh )):
+                                                #if (TempRate > 0.0):
 
                                                 if (InputData.Kin.WriteFormat == 'PLATO'):
                                                     Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'

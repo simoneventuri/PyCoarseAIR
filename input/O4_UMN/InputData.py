@@ -29,7 +29,7 @@ class inputdata(object):
         
         ### CASE SPECIFIC
         self.TranVec                   = np.array([10000.0])
-        self.T0                        = 300.0
+        self.T0                        = 1400.0
         self.iPES                      = 0
 
         self.DelRateMat_Flg            = True
@@ -38,9 +38,9 @@ class inputdata(object):
 
 
         ### CHEMICAL SYSTEM SPECIFIC
-        self.SystNameLong              = 'N4_NASA'
+        self.SystNameLong              = 'O4_UMN'
         self.OldVersion_IntFlg         = 0
-        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CoarseAIR/N4_NASA_CGM/Test/'
+        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CoarseAIR/O4_UMN_VSM/Test/'
         self.OutputWriteFldr           = OutputWriteFldr 
         self.SuffixName                = ''
 
@@ -83,22 +83,35 @@ class kinetics(object):
 
 
         ## Resolution of the Kinetics Data in Input? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
-        self.MolResolutionIn            = ['CGM']
         self.MinStateIn                 = np.array([     0,     0,     0,     0], dtype=np.int64)
         self.MaxStateIn                 = np.array([100000,100000,100000,100000], dtype=np.int64)
-        self.NGroupsIn                  = np.array([61], dtype=np.int64)
-        self.GroupsInPathsToMapping     = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N4_NASA/N2/LevelsMap_DPM61.csv']
-        self.GroupsInSuffix             = '_DP61'
+        # ###
+        # self.MolResolutionIn            = ['CGM']
+        # self.NGroupsIn                  = np.array([45], dtype=np.int64)
+        # self.GroupsInPathsToMapping     = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_DPM45.csv']
+        # self.GroupsInSuffix             = '_DP45'
+        ### 
+        self.MolResolutionIn            = ['VSM']
+        self.NGroupsIn                  = np.array([45], dtype=np.int64)
+        self.GroupsInPathsToMapping     = ['']
+        self.GroupsInSuffix             = '_VSM'
 
         ## Resolution of the Kinetics Data in Output? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
         self.MinStateOut                = np.array([     0,     0,     0,     0], dtype=np.int64)
         self.MaxStateOut                = np.array([100000,100000,100000,100000], dtype=np.int64)
-        self.NGroupsOut                 = np.array([61], dtype=np.int64)
         self.GroupsOut_Flg              = False
         self.GroupsOutWrite_Flg         = False 
-        self.MolResolutionOut           = ['CGM']
-        self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N4_NASA/N2/LevelsMap_DPM61.csv']
-        self.GroupsOutSuffix            = '_DP61'
+        # ###
+        # self.MolResolutionOut           = ['CGM']
+        # self.NGroupsOut                 = np.array([45], dtype=np.int64)
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_DPM45.csv']
+        # self.GroupsOutSuffix            = '_DP45'
+        ###
+        self.MolResolutionOut           = ['VSM']
+        self.NGroupsOut                 = np.array([45], dtype=np.int64)
+        self.GroupsOutPathsToMapping    = ['']
+        self.GroupsOutSuffix            = '_VSM'
+
 
 
         ## Packing + Unpacking Dissocation Rates:
