@@ -81,12 +81,12 @@ class groupedmolecule(object):
 
 
     # ***************************************************************************************************************************
-    def Initialize( self, InputData, Syst, Temp, NLevels, Levelvqn, LevelEeV, Levelg, LevelWrite_Flg, In_Flg ):
+    def Initialize( self, InputData, Syst, Temp, NLevels, Levelvqn, Levelg, LevelEeV, VRef, LevelWrite_Flg, In_Flg ):
         print('      [Molecule.py - Initialize]: Initializing Grouped Molecule ' + self.Name )
 
         self.Get_Mapping( Levelvqn )
 
-        self.Compute_GroupProps( NLevels, Levelg, LevelEeV, LevelWrite_Flg )
+        self.Compute_GroupProps( InputData, Syst, NLevels, Levelg, LevelEeV, VRef, LevelWrite_Flg, In_Flg )
 
         # if (In_Flg >= 0):
 
@@ -125,8 +125,13 @@ class groupedmolecule(object):
 
 
     # ***************************************************************************************************************************
-    def Compute_GroupProps( self, NLevels, Levelg, LevelEeV, LevelWrite_Flg ):
+    def Compute_GroupProps( self, InputData, Syst, NLevels, Levelg, LevelEeV, VRef, LevelWrite_Flg, In_Flg ):
         print('      [Molecule.py - Compute_GroupProps]: Computing Group Properties for Grouped Molecule ' + self.Name )
+
+        if (In_Flg == 1):
+            GroupsSuffix = InputData.Kin.GroupsInSuffix
+        else:
+            GroupsSuffix = InputData.Kin.GroupsOutSuffix
 
         Flg       = np.zeros((self.NGroups), dtype=np.int8)
         self.EeV0 = np.zeros((self.NGroups))
@@ -152,6 +157,17 @@ class groupedmolecule(object):
 
             self.T[iT].EeV    = self.T[iT].EeV / self.T[iT].Q
             self.T[iT].QRatio = self.T[iT].Q   / np.sum(self.T[iT].Q)
+
+
+        PathToFile = InputData.Kin.WriteFldr + '/thermo/' + Syst.NameLong + GroupsSuffix + '/' + self.CFDCompName + GroupsSuffix + '_Mapping.csv'
+        csvmole = open(PathToFile, 'w')
+        csvmole.write('#Idx,$E_i~[eV]$,$g_i$,Mapping\n')
+        for iLevel in range(NLevels):
+            Line   = '%i,%e,%e,%i\n' % ( iLevel+1, float(LevelEeV[iLevel] - VRef), float(Levelg[iLevel]), self.Mapping[iLevel] )
+            csvmole.write(Line)
+        csvmole.close()
+
+
     # ...........................................................................................................................
 
 
@@ -321,6 +337,8 @@ class molecule(object):
         self.StartLevel        = 0
         self.FinalLevel        = 0
 
+        self.VRef              = 0.0
+
         self.Levelvqn          = 0
         self.Leveljqn          = 0
         self.LevelEEh          = 0.0
@@ -389,7 +407,7 @@ class molecule(object):
         if ( (not self.KinMthdIn  == 'StS') ):            
             print('    [Molecule.py - Initialize]:     Initializing the Intial Grouped Molecule')
             self.GroupsIn = groupedmolecule(Temp, InputData.Kin.GroupsInPathsToMapping[iMol], InputData.T0, Syst.NProcTypes, self.Name, self.CFDCompName, self.KinMthdIn, iMol  )
-            self.GroupsIn.Initialize( InputData, Syst, Temp, self.NLevels, self.Levelvqn, self.LevelEeV, self.Levelg, self.LevelWrite_Flg, 1 )
+            self.GroupsIn.Initialize( InputData, Syst, Temp, self.NLevels, self.Levelvqn, self.Levelg, self.LevelEeV, self.VRef, self.LevelWrite_Flg, 1 )
             
             for iT in Temp.iTVec:
                 self.T[iT-1].EqEeV0In = self.GroupsIn.T[iT-1].EeV
@@ -402,7 +420,7 @@ class molecule(object):
         if (not self.KinMthdOut == 'StS'):   
             print('    [Molecule.py - Initialize]:      Initializing the Final Grouped Molecule')
             self.GroupsOut = groupedmolecule(Temp, InputData.Kin.GroupsOutPathsToMapping[iMol], InputData.T0, Syst.NProcTypes, self.Name, self.CFDCompName, self.KinMthdOut, iMol )        
-            self.GroupsOut.Initialize( InputData, Syst, Temp, self.NLevels, self.Levelvqn, self.LevelEeV, self.Levelg, self.LevelWrite_Flg, 0 )
+            self.GroupsOut.Initialize( InputData, Syst, Temp, self.NLevels, self.Levelvqn, self.Levelg, self.LevelEeV, self.VRef, self.LevelWrite_Flg, 0 )
 
             self.GroupsOut.Write_InitialConditions( InputData, Syst, Temp, 0 )
             
@@ -482,6 +500,8 @@ class molecule(object):
                 print('      [Molecule.py - Read_Levels]:       Saving Data for Molecule ' + self.Name + ' in the HDF5 File')
                 self.Save_Levels_HDF5( Syst )
         
+        self.VRef       = np.amin(self.LevelVMax) * Hartree_To_eV 
+
         self.LevelEeV0  = (self.LevelEEh - np.amin(self.LevelEEh )) * Hartree_To_eV 
         self.DissEeV    = (                np.amin(self.LevelVMax)) * Hartree_To_eV 
         self.Nvqn       = np.max(self.Levelvqn)+1

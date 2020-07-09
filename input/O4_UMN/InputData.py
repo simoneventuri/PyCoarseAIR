@@ -40,7 +40,7 @@ class inputdata(object):
         ### CHEMICAL SYSTEM SPECIFIC
         self.SystNameLong              = 'O4_UMN'
         self.OldVersion_IntFlg         = 0
-        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CoarseAIR/O4_UMN_VSM/Test/'
+        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CoarseAIR/O4_UMN_CGM_45Groups/Test/'
         self.OutputWriteFldr           = OutputWriteFldr 
         self.SuffixName                = ''
 
@@ -85,32 +85,32 @@ class kinetics(object):
         ## Resolution of the Kinetics Data in Input? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
         self.MinStateIn                 = np.array([     0,     0,     0,     0], dtype=np.int64)
         self.MaxStateIn                 = np.array([100000,100000,100000,100000], dtype=np.int64)
-        # ###
-        # self.MolResolutionIn            = ['CGM']
-        # self.NGroupsIn                  = np.array([45], dtype=np.int64)
-        # self.GroupsInPathsToMapping     = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_DPM45.csv']
-        # self.GroupsInSuffix             = '_DP45'
-        ### 
-        self.MolResolutionIn            = ['VSM']
+        ###
+        self.MolResolutionIn            = ['CGM']
         self.NGroupsIn                  = np.array([45], dtype=np.int64)
-        self.GroupsInPathsToMapping     = ['']
-        self.GroupsInSuffix             = '_VSM'
+        self.GroupsInPathsToMapping     = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_DPM45.csv']
+        self.GroupsInSuffix             = '_DP45'
+        ### 
+        # self.MolResolutionIn            = ['VSM']
+        # self.NGroupsIn                  = np.array([45], dtype=np.int64)
+        # self.GroupsInPathsToMapping     = ['']
+        # self.GroupsInSuffix             = '_VSM'
 
         ## Resolution of the Kinetics Data in Output? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
         self.MinStateOut                = np.array([     0,     0,     0,     0], dtype=np.int64)
         self.MaxStateOut                = np.array([100000,100000,100000,100000], dtype=np.int64)
         self.GroupsOut_Flg              = False
         self.GroupsOutWrite_Flg         = False 
-        # ###
-        # self.MolResolutionOut           = ['CGM']
-        # self.NGroupsOut                 = np.array([45], dtype=np.int64)
-        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_DPM45.csv']
-        # self.GroupsOutSuffix            = '_DP45'
         ###
-        self.MolResolutionOut           = ['VSM']
+        self.MolResolutionOut           = ['CGM']
         self.NGroupsOut                 = np.array([45], dtype=np.int64)
-        self.GroupsOutPathsToMapping    = ['']
-        self.GroupsOutSuffix            = '_VSM'
+        self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_DPM45.csv']
+        self.GroupsOutSuffix            = '_DP45'
+        # ###
+        # self.MolResolutionOut           = ['VSM']
+        # self.NGroupsOut                 = np.array([45], dtype=np.int64)
+        # self.GroupsOutPathsToMapping    = ['']
+        # self.GroupsOutSuffix            = '_VSM'
 
 
 

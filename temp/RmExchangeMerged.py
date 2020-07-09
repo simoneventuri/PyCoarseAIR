@@ -38,11 +38,11 @@ iExch           = 1
 # 		del f[TStr]
 # 		f.close()
 
-StrVec = ['/RatesMicroRev', '/N2_VSM', 'N2_DP10', '/N2_DP20', '/N2_DP61', '/N2_RVM61']
+StrVec = ['/Rates_VSM', 'Rates_DP10', '/Rates_DP20', '/Rates_DP61', '/Rates_RVM61']
 for StrStr in StrVec:
 	for TTra in TTraVec:
-		print(TTra, StrStr)
 		f = h5py.File(PathToFile_Orig, 'a')
 		TStr = 'T_' + str(int(TTra)) + '_' + str(int(TTra)) + StrStr 
+		print(TStr)
 		del f[TStr]
 		f.close()

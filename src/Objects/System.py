@@ -1052,12 +1052,17 @@ class t_properties(object):
 
         if (InputData.Kin.WriteFormat == 'PLATO'):
             print('    [System.py - Write_Kinetics]: Writing Kinetics in PLATO Format' )
+            Extension = '.dat'
         elif (InputData.Kin.WriteFormat == 'csv'):
             print('    [System.py - Write_Kinetics]: Writing Kinetics in .csv Format' )
+            Extension = '.csv'
         elif (InputData.Kin.WriteFormat == 'custom'):
             print('    [System.py - Write_Kinetics]: Writing Kinetics in Custom Format' )
+            print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+            Extension = '.temp'
         else:
             raise NameError("    [System.py - Write_Kinetics]: InputData.Kin.WriteFormat must be specified. Select 'PLATO', 'csv', or 'custom'")
+
 
 
         mkdirs(    InputData.Kin.WriteFldr + '/kinetics/' ) 
@@ -1082,15 +1087,15 @@ class t_properties(object):
 
                     if (InputData.Kin.CorrFactor != 1.0):
                         if (InputData.Kin.PackUnpackDiss_Flg):
-                            DissKinetics = TempFldr + '/Diss' + InputData.Kin.PackUnpackSuffix + '.dat' + DissSuffix
+                            DissKinetics = TempFldr + '/Diss' + InputData.Kin.PackUnpackSuffix + Extension + DissSuffix
                         else:
                             DissKinetics = TempFldr + '/Diss_Corrected.dat' + DissSuffix
                         print('    [System.py - Write_Kinetics]: Writing Corrected Dissociation: ' + Syst.Molecule[iMol].Name + '+' + Syst.Atom[iAtom].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name )
                     else:
                         if (InputData.Kin.PackUnpackDiss_Flg):
-                            DissKinetics = TempFldr + '/Diss' + InputData.Kin.PackUnpackSuffix + '.dat' + DissSuffix
+                            DissKinetics = TempFldr + '/Diss' + InputData.Kin.PackUnpackSuffix + Extension + DissSuffix
                         else:
-                            DissKinetics = TempFldr + '/Diss.dat' + DissSuffix
+                            DissKinetics = TempFldr + '/Diss' + Extension + DissSuffix
                         print('    [System.py - Write_Kinetics]: Writing Dissociation: ' + Syst.Molecule[iMol].Name + '+' + Syst.Atom[iAtom].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name )
                     csvkinetics  = open(DissKinetics, 'w')
                     
@@ -1124,10 +1129,10 @@ class t_properties(object):
             if (InputData.Kin.WriteInel_Flg):
 
                 if (InputData.Kin.WindAvrg_Flg):
-                    InelKinetics = TempFldr + '/Inel_WindAvrg.dat' 
+                    InelKinetics = TempFldr + '/Inel_WindAvrg' + Extension 
                     print('    [System.py - Write_Kinetics]: Writing Window-Averaged Inelastic: ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name )
                 else:
-                    InelKinetics = TempFldr + '/Inel.dat' 
+                    InelKinetics = TempFldr + '/Inel' + Extension 
                     print('    [System.py - Write_Kinetics]: Writing Inelastic: ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name )
                 csvkinetics  = open(InelKinetics, 'w')
 
@@ -1179,10 +1184,10 @@ class t_properties(object):
                         TempCoeff2B = 1.0
 
                     if (InputData.Kin.WindAvrg_Flg):
-                        ExchKinetics = TempFldr + 'Exch_Type' + str(iExch-1) + '_WindAvrg.dat' 
+                        ExchKinetics = TempFldr + 'Exch_Type' + str(iExch-1) + '_WindAvrg' + Extension 
                         print('    [System.py - Write_Kinetics]: Writing Window-Averaged Exchange Nb. '+ str(iExch-1) + ': ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Molecule[jToMol].Name  + '+' + Syst.Atom[jToAtom].Name  )
                     else:
-                        ExchKinetics = TempFldr + 'Exch_Type' + str(iExch-1) + '.dat' 
+                        ExchKinetics = TempFldr + 'Exch_Type' + str(iExch-1) + Extension
                         print('    [System.py - Write_Kinetics]: Writing Exchange Nb. '+ str(iExch-1) + ': ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Molecule[jToMol].Name  + '+' + Syst.Atom[jToAtom].Name  )
                     csvkinetics  = open(ExchKinetics, 'w')
 
@@ -1245,10 +1250,10 @@ class t_properties(object):
             if (InputData.Kin.WriteDiss_Flg):
 
                 if (InputData.Kin.CorrFactor != 1.0):
-                    DissKinetics = TempFldr + '/Diss_Corrected.dat' 
+                    DissKinetics = TempFldr + '/Diss_Corrected' + Extension 
                     print('    [System.py - Write_Kinetics]: Writing Corrected Dissociation: ' + Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '+' + Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name + '+' + Syst.Atom[3].Name )
                 else:
-                    DissKinetics = TempFldr + '/Diss.dat' 
+                    DissKinetics = TempFldr + '/Diss' + Extension 
                     print('    [System.py - Write_Kinetics]: Writing Dissociation: '           + Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '+' + Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name + '+' + Syst.Atom[3].Name )
                 csvkinetics  = open(DissKinetics, 'w')
 
@@ -1296,7 +1301,7 @@ class t_properties(object):
                 LHS_Str      = Mol1_Str + '+' + Mol2_Str
                 print('    [System.py - Write_Kinetics]: Writing Inelastic + Dissociation: ' + LHS_Str + '= Molecule + Atom + Atom' )
               
-                InelKinetics = TempFldr + '/DissInel.dat' 
+                InelKinetics = TempFldr + '/DissInel' + Extension 
                 csvkinetics  = open(InelKinetics, 'w')
 
                 if (InputData.Kin.WriteFormat == 'csv'):
@@ -1357,7 +1362,7 @@ class t_properties(object):
                 LHS_Str      = Mol1_Str + '+' + Mol2_Str
                 print('    [System.py - Write_Kinetics]: Writing Inelastic: ' + LHS_Str + '=' + LHS_Str )
                 
-                InelKinetics = TempFldr + '/Inel.dat' 
+                InelKinetics = TempFldr + '/Inel' + Extension 
                 csvkinetics  = open(InelKinetics, 'w')
 
                 if (InputData.Kin.WriteFormat == 'csv'):
@@ -1430,7 +1435,7 @@ class t_properties(object):
                     RHS_Str      = Mol1_Str + '+' + Mol2_Str
                     print('    [System.py - Write_Kinetics]: Writing Exchange Nb. '+ str(iExch-1) + ': ' + LHS_Str + '=' + RHS_Str )
 
-                    ExchKinetics = TempFldr + 'Exch_Type' + str(iExch-1) + '.dat' 
+                    ExchKinetics = TempFldr + 'Exch_Type' + str(iExch-1) + Extension
                     csvkinetics  = open(ExchKinetics, 'w')
 
                     if (InputData.Kin.WriteFormat == 'csv'):
@@ -1507,12 +1512,21 @@ class t_properties(object):
         TempFldr = InputData.Kin.WriteFldr + '/kinetics/' + Syst.NameLong + InputData.SuffixName + InputData.Kin.GroupsOutSuffix + '/T' + str(int(Temp.TranVec[self.iT-1])) + 'K/'
 
 
+        if (InputData.Kin.WriteFormat == 'PLATO'):
+            Extension = '.dat'
+        elif (InputData.Kin.WriteFormat == 'csv'):
+            Extension = '.csv'
+        elif (InputData.Kin.WriteFormat == 'custom'):
+            print('    [System.py - Write_Kinetics]: Customize the File by Specifying the Desired Format' )
+            Extension = '.temp'
+
+
         if (InputData.Kin.WriteDiss_Flg):
             if (InputData.Kin.CorrFactor != 1.0):
-                DissKinetics = TempFldr + '/Diss_Corrected.dat' 
+                DissKinetics = TempFldr + '/Diss_Corrected' + Extension 
                 print('    [System.py - Write_GroupedKinetics]: Writing Corrected Dissociation: ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name )
             else:
-                DissKinetics = TempFldr + '/Diss.dat' 
+                DissKinetics = TempFldr + '/Diss' + Extension
                 print('    [System.py - Write_GroupedKinetics]: Writing Dissociation: ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name )
             csvkinetics  = open(DissKinetics, 'w')
 
@@ -1543,7 +1557,7 @@ class t_properties(object):
 
         if (InputData.Kin.WriteInel_Flg):
   
-            InelKinetics = TempFldr + '/Inel.dat' 
+            InelKinetics = TempFldr + '/Inel' + Extension 
             print('    [System.py - Write_GroupedKinetics]: Writing Inelastic: ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name )
             csvkinetics  = open(InelKinetics, 'w')
 
@@ -1584,7 +1598,7 @@ class t_properties(object):
                 jAtom = Syst.ExchToAtom[iExch]
                 print('    [System.py - Write_GroupedKinetics]: iExch =  ' + str(iExch+1) )
 
-                ExchKinetics = TempFldr + 'Exch_Type' + str(iExch+1) + '.dat' 
+                ExchKinetics = TempFldr + 'Exch_Type' + str(iExch+1)  + Extension 
                 print('    [System.py - Write_GroupedKinetics]: Writing Exchange Nb. '+ str(iExch+1) + ': ' + Syst.Molecule[0].Name + '+' + Syst.Atom[2].Name + '=' + Syst.Molecule[jMol].Name  + '+' + Syst.Atom[jAtom].Name  )
                 csvkinetics  = open(ExchKinetics, 'w')
 
