@@ -163,7 +163,7 @@ class groupedmolecule(object):
         csvmole = open(PathToFile, 'w')
         csvmole.write('#Idx,$E_i~[eV]$,$g_i$,Mapping\n')
         for iLevel in range(NLevels):
-            Line   = '%i,%e,%e,%i\n' % ( iLevel+1, float(LevelEeV[iLevel] - VRef), float(Levelg[iLevel]), self.Mapping[iLevel] )
+            Line   = '%i,%e,%e,%i\n' % ( iLevel+1, float(LevelEeV[iLevel] - VRef), float(Levelg[iLevel]), self.Mapping[iLevel]+1 )
             csvmole.write(Line)
         csvmole.close()
 
