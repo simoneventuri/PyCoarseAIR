@@ -1089,7 +1089,7 @@ class t_properties(object):
                         if (InputData.Kin.PackUnpackDiss_Flg):
                             DissKinetics = TempFldr + '/Diss' + InputData.Kin.PackUnpackSuffix + Extension + DissSuffix
                         else:
-                            DissKinetics = TempFldr + '/Diss_Corrected.dat' + DissSuffix
+                            DissKinetics = TempFldr + '/Diss_Corrected' + Extension + DissSuffix
                         print('    [System.py - Write_Kinetics]: Writing Corrected Dissociation: ' + Syst.Molecule[iMol].Name + '+' + Syst.Atom[iAtom].Name + '=' + Syst.Atom[0].Name + '+' + Syst.Atom[1].Name + '+' + Syst.Atom[2].Name )
                     else:
                         if (InputData.Kin.PackUnpackDiss_Flg):
