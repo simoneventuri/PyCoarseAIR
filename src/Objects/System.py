@@ -494,8 +494,11 @@ class t_properties(object):
                 Syst.Pair[iP].NProcTot = NProcTot
 
 
-            self.DissRates     = np.zeros((NStates0_1, NStates0_2, 4))
-            self.Proc[0].Rates = np.zeros((NStates0_1, NStates0_2, maxNStates, Syst.NDistMolecules+6))
+            self.DissRates     = np.zeros((NStates0_1, NStates0_2, Syst.NDistMolecules+3))
+            if (InputData.Kin.ThCollPart):
+                self.Proc[0].Rates = np.zeros((NStates0_1, NStates0_2, maxNStates, Syst.NDistMolecules+3))
+            else:
+                self.Proc[0].Rates = np.zeros((NStates0_1, NStates0_2, maxNStates, Syst.NDistMolecules+6))
             for iP in range(1, 4):
                 print('    [System.py - Read_RatesAtT]: Pair ' + str(iP) + '; Rate Matrix shape = (' + str(NStates0_1) + '; ' + str(NStates0_2) + '; ' + str(Syst.Pair[iP-1].NStates) + '; ' + str(Syst.Pair[iPOppVec[iP-1]].NStates) + ')')
                 self.Proc[iP].Rates          = np.zeros((NStates0_1, NStates0_2, Syst.Pair[iP-1].NStates, Syst.Pair[iPOppVec[iP-1]].NStates))
@@ -554,7 +557,7 @@ class t_properties(object):
                                                 ToMol                                                      = Syst.CFDComp[ Syst.MolToCFDComp[ Syst.Pair[iPair].ToMol ] ].ToMol
                                                 self.Proc[0].Rates[iStates, jStates, lStates-1, ToMol]     = self.Proc[0].Rates[iStates, jStates, lStates-1, ToMol]     + RatesTempAll[iProc]
                                                 self.Proc[0].Rates[iStates, jStates, lStates-1, iPairTemp] = self.Proc[0].Rates[iStates, jStates, lStates-1, iPairTemp] + RatesTempAll[iProc]
-                                            elif (lStates == 0):
+                                            elif (lStates == 0) and (not InputData.Kin.ThCollPart):
                                                 iPair                                                      = iPOppVec[iP-1]
                                                 iPairTemp                                                  = Syst.NDistMolecules + iPair 
                                                 ToMol                                                      = Syst.CFDComp[ Syst.MolToCFDComp[ Syst.Pair[iPair].ToMol ] ].ToMol
@@ -985,10 +988,10 @@ class t_properties(object):
                 iTemp = 2
             
             self.ProcTot[0].Rates = np.zeros((NStates0_1, NStates0_2, iTemp))
-            for iMol in range(iTemp):
-                for iP in range(6):
-                    if ( Syst.MolToCFDComp[Syst.Pair[iP].ToMol] == Syst.MolToCFDComp[iMol] ):
-                        self.ProcTot[0].Rates[:,:,iMol] = self.ProcTot[0].Rates[:,:,iMol] + np.squeeze( np.sum(self.Proc[0].Rates[:,:,:,iP], axis=2) )
+            # for iMol in range(iTemp):
+            #     for iP in range(6):
+            #         if ( Syst.MolToCFDComp[Syst.Pair[iP].ToMol] == Syst.MolToCFDComp[iMol] ):
+            #             self.ProcTot[0].Rates[:,:,iMol] = self.ProcTot[0].Rates[:,:,iMol] + np.squeeze( np.sum(self.Proc[0].Rates[:,:,:,iP], axis=2) )
     # ...........................................................................................................................
 
 
@@ -1328,21 +1331,35 @@ class t_properties(object):
                                         kkStates = Syst.Molecule[iMol].LevelNewMapping[kStates]
                                         if ( ( (kkStates >= InputData.Kin.MinStateOut[2] - 1) and (kkStates <= InputData.Kin.MaxStateOut[2] - 1) ) and (Syst.Molecule[iMol].LevelWrite_Flg[kkStates]) ):
 
-                                            InEEh    = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[iStates] + Syst.Molecule[Syst.Pair[5].ToMol].T[self.iT-1].EqEeV0In[jStates]
-                                            FinEEh   = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[kStates]
+                                            if (InputData.Kin.ThCollPart):
+                                                InEEh    = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[iStates]
+                                                FinEEh   = 0.0
+                                            else:
+                                                InEEh    = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[iStates] + Syst.Molecule[Syst.Pair[5].ToMol].T[self.iT-1].EqEeV0In[jStates]
+                                                FinEEh   = Syst.Molecule[Syst.Pair[0].ToMol].T[self.iT-1].EqEeV0In[kStates]
 
                                             TempRate = self.Proc[0].Rates[iStates, jStates, kkStates, iMol]
                                             if (TempRate > 0.0): #  and ( TempCoeff * InEEh >= TempCoeff * FinEEh ):
 
                                                 if (InputData.Kin.WriteFormat == 'PLATO'):
-                                                    Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
-                                                    Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name + '(' + str(jjStates+1) + ')'
-                                                    LHS_Str  = Mol1_Str + '+' + Mol2_Str
-                                                    Mol1_Str = Syst.CFDComp[iComp].Name                                 + '(' + str(kkStates+1) + ')'
-                                                    Atms_Str = Syst.CFDComp[Syst.CFDComp[iComp].ToOppAtoms[0]].Name     + '+' + Syst.CFDComp[Syst.CFDComp[iComp].ToOppAtoms[1]].Name
-                                                    RHS_Str  = Mol1_Str + '+' + Atms_Str
-                                                    ProcName = LHS_Str  + '=' + RHS_Str
-                                                    Line     = ProcName + ':+%.4e,+0.0000E+00,+0.0000E+00,2\n' % float(TempRate)
+                                                    if (InputData.Kin.ThCollPart):
+                                                        Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
+                                                        Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name
+                                                        LHS_Str  = Mol1_Str + '+' + Mol2_Str
+                                                        Atms_Str = Syst.CFDComp[Syst.CFDComp[iComp].ToOppAtoms[0]].Name     + '+' + Syst.CFDComp[Syst.CFDComp[iComp].ToOppAtoms[1]].Name
+                                                        Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name                           
+                                                        RHS_Str  = Atms_Str + '+' + Mol2_Str
+                                                        ProcName = LHS_Str  + '=' + RHS_Str
+                                                        Line     = ProcName + ':+%.4e,+0.0000E+00,+0.0000E+00,0\n' % float(TempRate)
+                                                    else:
+                                                        Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
+                                                        Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name + '(' + str(jjStates+1) + ')'
+                                                        LHS_Str  = Mol1_Str + '+' + Mol2_Str
+                                                        Mol1_Str = Syst.CFDComp[iComp].Name                                 + '(' + str(kkStates+1) + ')'
+                                                        Atms_Str = Syst.CFDComp[Syst.CFDComp[iComp].ToOppAtoms[0]].Name     + '+' + Syst.CFDComp[Syst.CFDComp[iComp].ToOppAtoms[1]].Name
+                                                        RHS_Str  = Mol1_Str + '+' + Atms_Str
+                                                        ProcName = LHS_Str  + '=' + RHS_Str
+                                                        Line     = ProcName + ':+%.4e,+0.0000E+00,+0.0000E+00,2\n' % float(TempRate)
                                                 
                                                 elif (InputData.Kin.WriteFormat == 'csv'):
                                                     Line     = '%d,%d,%d,%e\n' % (iiStates+1, jjStates+1, kkStates+1, float(TempRate))
@@ -1403,14 +1420,24 @@ class t_properties(object):
                                             #if (TempRate > 0.0):
 
                                             if (InputData.Kin.WriteFormat == 'PLATO'):
-                                                Mol1_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
-                                                Mol2_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name + '(' + str(jjStates+1) + ')'
-                                                LHS_Str      = Mol1_Str + '+' + Mol2_Str
-                                                Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(kkStates+1) + ')'
-                                                Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name + '(' + str(llStates+1) + ')'
-                                                RHS_Str  = Mol1_Str + '+' + Mol2_Str
-                                                ProcName = LHS_Str  + '=' + RHS_Str
-                                                Line     = ProcName + ':+%.4e,+0.0000E+00,+0.0000E+00,5\n' % float(TempRate)
+                                                if (InputData.Kin.ThCollPart):
+                                                    Mol1_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
+                                                    Mol2_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name
+                                                    LHS_Str      = Mol1_Str + '+' + Mol2_Str
+                                                    Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(kkStates+1) + ')'
+                                                    Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name
+                                                    RHS_Str  = Mol1_Str + '+' + Mol2_Str
+                                                    ProcName = LHS_Str  + '=' + RHS_Str
+                                                    Line     = ProcName + ':+%.4e,+0.0000E+00,+0.0000E+00,5\n' % float(TempRate)
+                                                else:
+                                                    Mol1_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
+                                                    Mol2_Str     = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name + '(' + str(jjStates+1) + ')'
+                                                    LHS_Str      = Mol1_Str + '+' + Mol2_Str
+                                                    Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(kkStates+1) + ')'
+                                                    Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name + '(' + str(llStates+1) + ')'
+                                                    RHS_Str  = Mol1_Str + '+' + Mol2_Str
+                                                    ProcName = LHS_Str  + '=' + RHS_Str
+                                                    Line     = ProcName + ':+%.4e,+0.0000E+00,+0.0000E+00,5\n' % float(TempRate)                                                   
 
                                             elif (InputData.Kin.WriteFormat == 'csv'):
                                                 Line     = '%d,%d,%d,%d,%e\n' % (iiStates+1, jjStates+1, kkStates+1, llStates+1, float(TempRate))
@@ -1481,14 +1508,24 @@ class t_properties(object):
                                                 #if (TempRate > 0.0):
 
                                                 if (InputData.Kin.WriteFormat == 'PLATO'):
-                                                    Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
-                                                    Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name + '(' + str(jjStates+1) + ')'
-                                                    LHS_Str  = Mol1_Str + '+' + Mol2_Str
-                                                    Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[kMol]].Name + '(' + str(kkStates+1) + ')'
-                                                    Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[lMol]].Name + '(' + str(llStates+1) + ')'
-                                                    RHS_Str  = Mol1_Str + '+' + Mol2_Str
-                                                    ProcName = LHS_Str  + '=' + RHS_Str
-                                                    Line     = ProcName + ':+%.4e,+0.0000E+00,+0.0000E+00,6\n' % float(TempRate)
+                                                    if (InputData.Kin.ThCollPart):
+                                                        Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
+                                                        Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name
+                                                        LHS_Str  = Mol1_Str + '+' + Mol2_Str
+                                                        Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[kMol]].Name + '(' + str(kkStates+1) + ')'
+                                                        Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[lMol]].Name
+                                                        RHS_Str  = Mol1_Str + '+' + Mol2_Str
+                                                        ProcName = LHS_Str  + '=' + RHS_Str
+                                                        Line     = ProcName + ':+%.4e,+0.0000E+00,+0.0000E+00,5\n' % float(TempRate)
+                                                    else:
+                                                        Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[0].ToMol]].Name + '(' + str(iiStates+1) + ')'
+                                                        Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[Syst.Pair[5].ToMol]].Name + '(' + str(jjStates+1) + ')'
+                                                        LHS_Str  = Mol1_Str + '+' + Mol2_Str
+                                                        Mol1_Str = Syst.CFDComp[Syst.MolToCFDComp[kMol]].Name + '(' + str(kkStates+1) + ')'
+                                                        Mol2_Str = Syst.CFDComp[Syst.MolToCFDComp[lMol]].Name + '(' + str(llStates+1) + ')'
+                                                        RHS_Str  = Mol1_Str + '+' + Mol2_Str
+                                                        ProcName = LHS_Str  + '=' + RHS_Str
+                                                        Line     = ProcName + ':+%.4e,+0.0000E+00,+0.0000E+00,6\n' % float(TempRate)
                                                 
                                                 elif (InputData.Kin.WriteFormat == 'csv'):
                                                     Line     = '%d,%d,%d,%d,%e\n' % (iiStates+1, jjStates+1, kkStates+1, llStates+1, float(TempRate))

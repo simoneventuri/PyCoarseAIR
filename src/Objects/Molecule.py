@@ -159,13 +159,13 @@ class groupedmolecule(object):
             self.T[iT].QRatio = self.T[iT].Q   / np.sum(self.T[iT].Q)
 
 
-        PathToFile = InputData.Kin.WriteFldr + '/thermo/' + Syst.NameLong + GroupsSuffix + '/' + self.CFDCompName + GroupsSuffix + '_Mapping.csv'
-        csvmole = open(PathToFile, 'w')
-        csvmole.write('#Idx,$E_i~[eV]$,$g_i$,Mapping\n')
-        for iLevel in range(NLevels):
-            Line   = '%i,%e,%e,%i\n' % ( iLevel+1, float(LevelEeV[iLevel] - VRef), float(Levelg[iLevel]), self.Mapping[iLevel]+1 )
-            csvmole.write(Line)
-        csvmole.close()
+        # PathToFile = InputData.Kin.WriteFldr + '/thermo/' + Syst.NameLong + '/' + self.CFDCompName + GroupsSuffix + '_Mapping.csv'
+        # csvmole = open(PathToFile, 'w')
+        # csvmole.write('#Idx,$E_i~[eV]$,$g_i$,Mapping\n')
+        # for iLevel in range(NLevels):
+        #     Line   = '%i,%e,%e,%i\n' % ( iLevel+1, float(LevelEeV[iLevel] - VRef), float(Levelg[iLevel]), self.Mapping[iLevel]+1 )
+        #     csvmole.write(Line)
+        # csvmole.close()
 
 
     # ...........................................................................................................................

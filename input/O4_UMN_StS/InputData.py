@@ -20,17 +20,16 @@
 ##==============================================================================================================
 import numpy as np
 
-
 class inputdata(object):
 
     def __init__( self, WORKSPACE_PATH, CoarseAIRFldr, PyCoarseAIRFldr, DtbHDF5Fldr, DtbWriteFldr, OutputWriteFldr ):
         self.WORKSPACE_PATH            = WORKSPACE_PATH
         self.CoarseAIRFldr             = CoarseAIRFldr
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
-
+        
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([15000.0]) #np.array([2500.0, 5000.0, 7500.0, 10000.0, 12500.0, 15000.0, 20000.0])
-        self.T0                        = 300.0
+        self.TranVec                   = np.array([10000.0])
+        self.T0                        = 1400.0
         self.iPES                      = 0
 
         self.DelRateMat_Flg            = True
@@ -39,9 +38,9 @@ class inputdata(object):
 
 
         ### CHEMICAL SYSTEM SPECIFIC
-        self.SystNameLong              = 'CO2_NASA'
+        self.SystNameLong              = 'OaObOcOd_UMN'
         self.OldVersion_IntFlg         = 0
-        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CoarseAIR/CO2_ALL/Test/'
+        self.DtbReadFldr               = self.WORKSPACE_PATH + '/CoarseAIR/O4_UMN_StS/Test/'
         self.OutputWriteFldr           = OutputWriteFldr 
         self.SuffixName                = ''
 
@@ -64,13 +63,14 @@ class kinetics(object):
         self.Read_Flg                   = True
         #self.ReadFldr                   = WORKSPACE_PATH + '/Mars_Database/Run_0D/database/'                      # To be used Only when Required to read a Database in PLATO's Format
 
+        self.ThCollPart                 = True
 
         ## Writing Kinetics Data
         self.Write_Flg                  = True
         self.WriteFldr                  = DtbWriteFldr
-        self.WriteDiss_Flg              = True
+        self.WriteDiss_Flg              = True 
         self.CorrFactor                 = 1.0
-        self.DissTypes                  = np.array([0, 1, 2, 3])
+        self.WriteDissInel_Flg          = True 
         self.WriteInel_Flg              = True
         self.WriteExch_Flg              = True
 
@@ -78,58 +78,48 @@ class kinetics(object):
         self.WriteQB_IntFlg             = 2
         self.WriteFormat                = 'PLATO'
 
-        self.WriteMicroRevCorrection    = True
-        self.SytOfComplemExch           = ['O2C_NASA']
-        self.ProcOfComplemExch          = np.array([2], dtype=np.int64)
+        self.WriteMicroRevCorrection    = False
+        #self.SytOfComplemExch           = 'O3_UMN'
+        #self.ProcOfComplemExch          = np.array([2], dtype=np.int64)
+
 
 
         ## Resolution of the Kinetics Data in Input? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
-        self.MolResolutionIn            = ['StS', 'StS']
-        self.MinStateIn                 = np.array([     0], dtype=np.int64)
-        self.MaxStateIn                 = np.array([100000], dtype=np.int64)
-        self.NGroupsIn                  = []
-        self.GroupsInPathsToMapping     = ['']
-        self.GroupsInSuffix             = ''
-
+        self.MinStateIn                 = np.array([     0,     0,     0,     0], dtype=np.int64)
+        self.MaxStateIn                 = np.array([100000,100000,100000,100000], dtype=np.int64)
+        ###
+        self.MolResolutionIn            = ['StS','StS','StS','CGM','CGM','CGM']
+        self.NGroupsIn                  = np.array([6115,6115,6115,1,1,1], dtype=np.int64)
+        self.GroupsInPathsToMapping     = ['','','','/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_RVE1.csv','/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_RVE1.csv','/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_RVE1.csv']
+        self.GroupsInSuffix             = '_StS'
+        ### 
+        # self.MolResolutionIn            = ['VSM']
+        # self.NGroupsIn                  = np.array([45], dtype=np.int64)
+        # self.GroupsInPathsToMapping     = ['']
+        # self.GroupsInSuffix             = '_VSM'
 
         ## Resolution of the Kinetics Data in Output? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
-        self.MinStateOut                = np.array([     0,      0], dtype=np.int64)
-        self.MaxStateOut                = np.array([100000, 100000], dtype=np.int64)
-        #### StS
-        self.MolResolutionOut           = ['StS', 'StS']
+        self.MinStateOut                = np.array([     0,     0,     0,     0], dtype=np.int64)
+        self.MaxStateOut                = np.array([100000,100000,100000,100000], dtype=np.int64)
         self.GroupsOut_Flg              = False
-        self.GroupsOutWrite_Flg         = False
-        self.GroupsOutPathsToMapping    = ['']
-        self.NGroupsOut                 = np.array([45], dtype=np.int64)
-        self.GroupsOutSuffix            = ''
-        # ### CGM DP
-        # self.MolResolutionOut           = ['CGM', 'CGM']
-        # self.GroupsOut_Flg              = True
-        # self.GroupsOutWrite_Flg         = True
-        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/CO2_NASA/CO/LevelsMap_DPM83.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/CO2_NASA/O2/LevelsMap_DPM49.csv']
-        # self.NGroupsOut                 = np.array([83,49], dtype=np.int64)
-        # self.GroupsOutSuffix            = '_DP83' #_Phys_45Bins
-        # ### CGM RVE
-        # self.MolResolutionOut           = ['CGM', 'CGM']
-        # self.GroupsOut_Flg              = True
-        # self.GroupsOutWrite_Flg         = True
-        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/CO2_NASA/CO/LevelsMap_RVE83.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/CO2_NASA/O2/LevelsMap_RVE49.csv']
-        # self.NGroupsOut                 = np.array([83,49], dtype=np.int64)
-        # self.GroupsOutSuffix            = '_RVE83' #_Phys_45Bins
-        # ### VSM
-        # self.MolResolutionOut           = ['VSM', 'VSM']
-        # self.GroupsOut_Flg              = True
-        # self.GroupsOutWrite_Flg         = True
-        # self.GroupsOutPathsToMapping    = ['','']
-        # self.NGroupsOut                 = np.array([83,49], dtype=np.int64)
-        # self.GroupsOutSuffix            = '_VSM' #_Phys_45Bins
+        self.GroupsOutWrite_Flg         = False 
+        ###
+        self.MolResolutionOut           = ['StS','StS','StS','CGM','CGM','CGM']
+        self.NGroupsOut                 = np.array([6115,6115,6115,1,1,1], dtype=np.int64)
+        self.GroupsOutPathsToMapping    = ['','','','/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_RVE1.csv','/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_RVE1.csv','/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/O3_UMN/O2/LevelsMap_RVE1.csv']
+        self.GroupsOutSuffix            = '_StS'
+        # ###
+        # self.MolResolutionOut           = ['VSM']
+        # self.NGroupsOut                 = np.array([45], dtype=np.int64)
+        # self.GroupsOutPathsToMapping    = ['']
+        # self.GroupsOutSuffix            = '_VSM'
 
 
 
         ## Packing + Unpacking Dissocation Rates:
         self.PackUnpackDiss_Flg         = False
-        self.PackUnpackType             = ['VSM', 'VSM']
-        self.PackUnpackPathsToMapping   = ['', '']
+        self.PackUnpackType             = ['VSM']
+        self.PackUnpackPathsToMapping   = ['']
         self.PackUnpackSuffix           = '_VS' #_Phys_45Bins
 
 
@@ -137,6 +127,7 @@ class kinetics(object):
         self.WindAvrg_Flg               = False
         self.WindAvrgJs                 = 3
         self.WindAvrgVs                 = 2
+
 
         ## Writing Arrhenius Files
         self.MaxEntOrPlato              = 1
@@ -163,7 +154,7 @@ class hdf5(object):
 
 class ME(object):
 
-    def __init__(self, WORKSPACE_PATH):
+    def __init__( self, WORKSPACE_PATH ):
 
         self.Read_Flg                   = False
         self.ReadFldr                   = WORKSPACE_PATH + '/Mars_Database/Run_0D/'
