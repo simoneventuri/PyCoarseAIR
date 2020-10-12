@@ -30,10 +30,10 @@ CoarseAIRFldr   = WORKSPACE_PATH + '/CoarseAIR/coarseair/'										         	  
 #CoarseAIRFldr   = os.environ['COARSEAIR_SOURCE_DIR']
 PyCoarseAIRFldr = WORKSPACE_PATH + '/PyCoarseAIR/'		                							            # <--- Please, CHANGE this path to the folder of the PyCoarseAIR Code
 
-DtbHDF5Fldr     = WORKSPACE_PATH + '/CO2_Database/HDF5_Database/'                                            # <--- Please, CHANGE this path to the folder containing the HDF5 File
+DtbHDF5Fldr     = WORKSPACE_PATH + '/Air_Database/HDF5_Database/'                                            # <--- Please, CHANGE this path to the folder containing the HDF5 File
 
-DtbWriteFldr    = WORKSPACE_PATH + '/CO2_Database/Run_0D/database/'                                          # <--- Please, CHANGE this path to the folder where you want PYCoareseAIR writing the Postprocessed Kinetics Database
-OutputWriteFldr = WORKSPACE_PATH + '/CO2_Database/Results/'                                                  # <--- Please, CHANGE this path to the folder where you want PYCoareseAIR writing its Output Files and Plots
+DtbWriteFldr    = WORKSPACE_PATH + '/Air_Database/Run_0D/database/'                                          # <--- Please, CHANGE this path to the folder where you want PYCoareseAIR writing the Postprocessed Kinetics Database
+OutputWriteFldr = WORKSPACE_PATH + '/Air_Database/Results/'                                                  # <--- Please, CHANGE this path to the folder where you want PYCoareseAIR writing its Output Files and Plots
 ##--------------------------------------------------------------------------------------------------------------
 
 

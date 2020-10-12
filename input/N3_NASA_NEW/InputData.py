@@ -29,7 +29,7 @@ class inputdata(object):
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
 
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([2500.0, 5000.0, 10000.0, 20000.0]) #np.array([1000.0, 2500.0, 3500.0, 7500.0, 10000.0, 12500.0, 15000.0, 20000.0, 25000.0, 30000.0, 40000.0, 50000.0])
+        self.TranVec                   = np.array([2500.0, 5000.0, 10000.0, 20000.0]) #np.array([1000.0, 2500.0, 3500.0, 8000.0, 10000.0, 12500.0, 15000.0, 20000.0, 25000.0, 30000.0, 40000.0, 50000.0])
         self.T0                        = 300.0
         self.iPES                      = 0
 
@@ -97,7 +97,7 @@ class kinetics(object):
         ## Resolution of the Kinetics Data in Output? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
         self.MinStateOut                = np.array([     0,      0], dtype=np.int64)
         self.MaxStateOut                = np.array([100000, 100000], dtype=np.int64)
-        #### StS
+        ### StS
         self.MolResolutionOut           = ['StS']
         self.GroupsOut_Flg              = False
         self.GroupsOutWrite_Flg         = False
@@ -111,12 +111,26 @@ class kinetics(object):
         # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N3_NASA/N3/LevelsMap_DPM61.csv']
         # self.NGroupsOut                 = np.array([61], dtype=np.int64)
         # self.GroupsOutSuffix            = '_DP61' #_Phys_45Bins
+        # ### CGM DP Inel
+        # self.MolResolutionOut           = ['CGM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/CoarseAIR/coarseair/dtb/Molecules/N2/LeRoy/Bins_61/LevelsMap_InelDP61.csv']
+        # self.NGroupsOut                 = np.array([61], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_DPI61' #_Phys_45Bins
+        # ### CGM Amal
+        # self.MolResolutionOut           = ['CGM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/CoarseAIR/coarseair/dtb/Molecules/N2/LeRoy/Bins_61/LevelsMap_InelAmal61.csv']
+        # self.NGroupsOut                 = np.array([61], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_ADA61' #_Phys_45Bins
         # ### CGM RVE
         # self.MolResolutionOut           = ['CGM']
         # self.GroupsOut_Flg              = True
         # self.GroupsOutWrite_Flg         = True
-        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N3_NASA/N3/LevelsMap_RVE60.csv']
-        # self.NGroupsOut                 = np.array([60], dtype=np.int64)
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/CoarseAIR/coarseair/dtb/Molecules/N2/LeRoy/Bins_61/LevelsMap_RVE61.csv']
+        # self.NGroupsOut                 = np.array([61], dtype=np.int64)
         # self.GroupsOutSuffix            = '_RVE61' #_Phys_45Bins
         # ### VSM
         # self.MolResolutionOut           = ['VSM']

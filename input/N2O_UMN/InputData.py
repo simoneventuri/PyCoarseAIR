@@ -29,7 +29,7 @@ class inputdata(object):
         self.PyCoarseAIRFldr           = PyCoarseAIRFldr
 
         ### CASE SPECIFIC
-        self.TranVec                   = np.array([2500.0, 5000.0, 7500.0, 10000.0, 15000.0, 20000.0])
+        self.TranVec                   = np.array([2500.0, 5000.0, 7500.0, 10000.0, 15000.0, 20000.0]) # np.array([5000.0, 10000.0, 20000.0]) #
         self.T0                        = 300.0
         self.iPES                      = 0
 
@@ -76,7 +76,7 @@ class kinetics(object):
 
         self.WriteExoth_Flg             = True
         self.WriteQB_IntFlg             = 2
-        self.WriteFormat                = 'csv'
+        self.WriteFormat                = 'PLATO'
 
         self.WriteMicroRevCorrection    = True
         self.SytOfComplemExch           = ['NON_UMN']
@@ -95,25 +95,39 @@ class kinetics(object):
         ## Resolution of the Kinetics Data in Output? Array of 'StS' / 'VSM' / 'CGM' of size Syst.NMolecules
         self.MinStateOut                = np.array([     0,      0], dtype=np.int64)
         self.MaxStateOut                = np.array([100000, 100000], dtype=np.int64)
-        # #### StS
-        # self.MolResolutionOut           = ['StS', 'StS']
-        # self.GroupsOut_Flg              = False
-        # self.GroupsOutWrite_Flg         = False
-        # self.GroupsOutPathsToMapping    = ['']
-        # self.NGroupsOut                 = np.array([45], dtype=np.int64)
-        # self.GroupsOutSuffix            = ''
-        ### CGM DP
-        self.MolResolutionOut           = ['CGM', 'CGM']
-        self.GroupsOut_Flg              = True
-        self.GroupsOutWrite_Flg         = True
-        self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N2O_UMN/N2/LevelsMap_DPM10.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N2O_UMN/NO/LevelsMap_DPM10.csv']
-        self.NGroupsOut                 = np.array([10,10], dtype=np.int64)
-        self.GroupsOutSuffix            = '_DP10' #_Phys_45Bins
+        #### StS
+        self.MolResolutionOut           = ['StS', 'StS']
+        self.GroupsOut_Flg              = False
+        self.GroupsOutWrite_Flg         = False
+        self.GroupsOutPathsToMapping    = ['']
+        self.NGroupsOut                 = np.array([45], dtype=np.int64)
+        self.GroupsOutSuffix            = ''
+        # ### CGM DP
+        # self.MolResolutionOut           = ['CGM', 'CGM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N2O_UMN/N2/LevelsMap_DPM10.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N2O_UMN/NO/LevelsMap_DPM10.csv']
+        # self.NGroupsOut                 = np.array([10,10], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_DP10' #_Phys_45Bins
+        # ### CGM DP Inel
+        # self.MolResolutionOut           = ['CGM', 'CGM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/CoarseAIR/coarseair/dtb/Molecules/N2/UMN_ForN2O2/Bins_54/LevelsMap_InelDP54.csv', '/home/venturi/WORKSPACE/CoarseAIR/coarseair/dtb/Molecules/NO/UMN/Bins_46/LevelsMap_InelDP46.csv',]
+        # self.NGroupsOut                 = np.array([54,46], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_DPI54' #_Phys_45Bins
+        # ### CGM Amal
+        # self.MolResolutionOut           = ['CGM', 'CGM']
+        # self.GroupsOut_Flg              = True
+        # self.GroupsOutWrite_Flg         = True
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/CoarseAIR/coarseair/dtb/Molecules/N2/UMN_ForN2O2/Bins_54/LevelsMap_InelAmal54.csv', '/home/venturi/WORKSPACE/CoarseAIR/coarseair/dtb/Molecules/NO/UMN/Bins_46/LevelsMap_InelAmal46.csv',]
+        # self.NGroupsOut                 = np.array([54,46], dtype=np.int64)
+        # self.GroupsOutSuffix            = '_ADA54' #_Phys_45Bins
         # ### CGM RVE
         # self.MolResolutionOut           = ['CGM', 'CGM']
         # self.GroupsOut_Flg              = True
         # self.GroupsOutWrite_Flg         = True
-        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N2O_UMN/N2/LevelsMap_RVE54.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N2O_UMN/NO/LevelsMap_RVE46.csv']
+        # self.GroupsOutPathsToMapping    = ['/home/venturi/WORKSPACE/CoarseAIR/coarseair/dtb/Molecules/N2/UMN_ForN2O2/Bins_54/LevelsMap_RVE54.csv', '/home/venturi/WORKSPACE/Air_Database/Run_0D/database/grouping/N2O_UMN/NO/LevelsMap_RVE46.csv']
         # self.NGroupsOut                 = np.array([54,46], dtype=np.int64)
         # self.GroupsOutSuffix            = '_RVE54' #_Phys_45Bins
         # ### VSM
@@ -123,8 +137,6 @@ class kinetics(object):
         # self.GroupsOutPathsToMapping    = ['','']
         # self.NGroupsOut                 = np.array([54,46], dtype=np.int64)
         # self.GroupsOutSuffix            = '_VSM' #_Phys_45Bins
-
-
 
         ## Packing + Unpacking Dissocation Rates:
         self.PackUnpackDiss_Flg         = False

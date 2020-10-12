@@ -83,6 +83,7 @@ class groupedmolecule(object):
     # ***************************************************************************************************************************
     def Initialize( self, InputData, Syst, Temp, NLevels, Levelvqn, Levelg, LevelEeV, VRef, LevelWrite_Flg, In_Flg ):
         print('      [Molecule.py - Initialize]: Initializing Grouped Molecule ' + self.Name )
+        print('      [Molecule.py - Initialize]: Nb of Levels ' + str(NLevels) )
 
         self.Get_Mapping( Levelvqn )
 
@@ -127,6 +128,7 @@ class groupedmolecule(object):
     # ***************************************************************************************************************************
     def Compute_GroupProps( self, InputData, Syst, NLevels, Levelg, LevelEeV, VRef, LevelWrite_Flg, In_Flg ):
         print('      [Molecule.py - Compute_GroupProps]: Computing Group Properties for Grouped Molecule ' + self.Name )
+        print('      [Molecule.py - Compute_GroupProps]: Nb of Levels ' + str(NLevels) )
 
         if (In_Flg == 1):
             GroupsSuffix = InputData.Kin.GroupsInSuffix

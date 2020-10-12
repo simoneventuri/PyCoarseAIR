@@ -29,7 +29,7 @@ class inputdata(object):
         
         ### CASE SPECIFIC
         self.TranVec                   = np.array([10000.0])
-        self.T0                        = 1400.0
+        self.T0                        = 300.0
         self.iPES                      = 0
 
         self.DelRateMat_Flg            = True
